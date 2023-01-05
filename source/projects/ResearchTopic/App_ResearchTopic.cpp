@@ -3,6 +3,8 @@
 
 //Includes
 #include "App_ResearchTopic.h"
+#include "projects/Movement/SteeringBehaviors/SteeringAgent.h"
+
 
 using namespace Elite;
 
@@ -12,6 +14,11 @@ App_ResearchTopic::~App_ResearchTopic()
 	SAFE_DELETE(m_pGridGraph);
 	SAFE_DELETE(m_pGraphRenderer);
 	SAFE_DELETE(m_pGraphEditor);
+
+	for (auto a : m_AgentVec)
+	{
+		SAFE_DELETE(a.pAgent);
+	}
 }
 
 //Functions
@@ -49,6 +56,12 @@ void App_ResearchTopic::Update(float deltaTime)
 		destinationIdx = closestNode;
 		CalculateHeatMap();
 	}
+	if (INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Up))
+	{
+		MouseData data{ INPUTMANAGER->GetMouseData(InputType{}) };
+		AddAgent(Vector2{ float(data.X), float(data.Y) });
+	}
+
 	//IMGUI
 	UpdateImGui();
 
@@ -57,6 +70,17 @@ void App_ResearchTopic::Update(float deltaTime)
 	{
 		CalculateHeatMap();
 	}
+
+	//UPDATE AGENTS
+	for (const ImGui_Agent& a : m_AgentVec)
+	{
+		if (a.pAgent)
+		{
+			a.pAgent->SetLinearVelocity(m_VectorMap[m_pGridGraph->GetNodeIdxAtWorldPos(a.pAgent->GetPosition())] * 15);
+			a.pAgent->Update(deltaTime);
+		}
+	}
+
 }
 
 void App_ResearchTopic::Render(float deltaTime) const
@@ -81,7 +105,23 @@ void App_ResearchTopic::Render(float deltaTime) const
 		}
 		for (int index{}; index < m_HeatMap.size(); ++index)
 		{
-			m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float(m_HeatMap[index]) / furthestIdx, 0, 0 });
+			if (m_HeatMap[index] != -1)
+				m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float(m_HeatMap[index]) / furthestIdx, 0, 0 });
+			else
+				m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 0,0,1});
+		}
+	}
+
+	if (m_DebugSettings.showVectorMap == true)
+	{
+		DrawVectors();
+	}
+
+	for (const ImGui_Agent& a : m_AgentVec)
+	{
+		if (a.pAgent)
+		{
+			a.pAgent->Render(deltaTime);
 		}
 	}
 }
@@ -228,10 +268,7 @@ void App_ResearchTopic::CalculateHeatMap()
 		toDoList = newToDoList;
 		++distnaceCounter;
 	}
-
-
-	
-
+	UpdateVectorMap();
 }
 
 void App_ResearchTopic::UpdateVectorMap()
@@ -240,4 +277,148 @@ void App_ResearchTopic::UpdateVectorMap()
 	m_VectorMap.resize(m_HeatMap.size());
 	std::fill(m_VectorMap.begin(), m_VectorMap.end(), Vector2{0,0});
 
+	// for all nodes on the grid
+	for (int index{}; index < m_VectorMap.size(); ++index)
+	{
+		m_VectorMap[index] = CreateVector(index);
+	}
+}
+
+Vector2 App_ResearchTopic::CreateVector(int idx) const
+{
+	if (m_HeatMap[idx] == -1)
+	{
+		return Vector2{};
+	}
+
+	std::vector<Vector2> surroundingVectors{};
+	surroundingVectors.reserve(8);
+
+	const float sqrt2{ 1 / sqrtf(2) };
+	Vector2 centerPos{ m_pGridGraph->GetNodeWorldPos(idx) };
+
+	bool isNextToWall{ false };
+
+	{	//Left node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{-float(m_SizeCell), 0}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ -float(m_HeatMap[nodeIdx]), 0 });
+		}
+		else
+			isNextToWall = true;
+		
+	}
+	{	//TopLeft node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{-float(m_SizeCell), float(m_SizeCell)}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{sqrt2 *  -float(m_HeatMap[nodeIdx]), sqrt2 * float(m_HeatMap[nodeIdx]) });
+		}
+		else
+			isNextToWall = true;
+	}
+	{	//Top node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{0, float(m_SizeCell)}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ 0, float(m_HeatMap[nodeIdx]) });
+		}
+		else
+			isNextToWall = true;
+	}
+	{	//TopRight node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{float(m_SizeCell), float(m_SizeCell)}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ sqrt2 * float(m_HeatMap[nodeIdx]),sqrt2 * float(m_HeatMap[nodeIdx]) });
+		}
+		else
+			isNextToWall = true;
+	}
+	{	//Right node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{float(m_SizeCell), 0}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ float(m_HeatMap[nodeIdx]), 0 });
+		}
+		else
+			isNextToWall = true;
+	}
+	{	//BottomRight node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{float(m_SizeCell), -float(m_SizeCell)}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ sqrt2 * float(m_HeatMap[nodeIdx]),sqrt2 * -float(m_HeatMap[nodeIdx]) });
+		}
+		else
+			isNextToWall = true;
+	}
+	{	//Bottom node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{0, -float(m_SizeCell)}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ 0, -float(m_HeatMap[nodeIdx]) });
+		}
+		else
+			isNextToWall = true;
+	}
+	{	//BottomLeft node
+		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{-float(m_SizeCell), -float(m_SizeCell)}) };
+		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
+		{
+			surroundingVectors.push_back(Vector2{ sqrt2 * -float(m_HeatMap[nodeIdx]),sqrt2 * -float(m_HeatMap[nodeIdx]) });
+		}
+		else
+			isNextToWall = true;
+	}
+
+
+	Vector2 returnVector{};
+	for (const Vector2& vector: surroundingVectors)
+	{
+		//If the square is next to a wall
+		if (isNextToWall)
+		{
+			// find the smallest vector
+			Vector2 smallestVector{1000, 1000};
+			for (const Vector2& vector : surroundingVectors)
+			{
+				if (smallestVector.MagnitudeSquared() > vector.MagnitudeSquared())
+					smallestVector = vector;
+			}
+			returnVector = -smallestVector;
+			break;
+		}
+
+		returnVector += 1/vector;
+	}
+
+	returnVector.Normalize();
+
+	return -returnVector;
+}
+
+void App_ResearchTopic::DrawVectors() const
+{
+	for (int idx{}; idx < m_VectorMap.size(); ++idx)
+	{
+		if (m_HeatMap[idx] != 0)
+		{
+			Vector2 position{ m_pGridGraph->GetNodeWorldPos(idx) };
+			DEBUGRENDERER2D->DrawSegment(position, position + m_VectorMap[idx] * 5, Color{ 1.f,1.f,1.f }, 0.9f);
+		}
+	}
+}
+
+void App_ResearchTopic::AddAgent(const Vector2& position)
+{
+	ImGui_Agent agent{};
+	agent.pAgent = new SteeringAgent();
+	agent.pAgent->SetAutoOrient(true);
+	agent.pAgent->SetMaxLinearSpeed(15);
+	agent.pAgent->SetMass(1);
+	agent.pAgent->SetPosition(Vector2{100,50});
+
+	m_AgentVec.push_back(agent);
 }

@@ -7,6 +7,10 @@
 #include "framework\EliteAI\EliteGraphs\EliteGraphUtilities\EGraphEditor.h"
 #include "framework\EliteAI\EliteGraphs\EliteGraphUtilities\EGraphRenderer.h"
 
+
+class SteeringAgent;
+class ISteeringBehavior;
+
 class App_ResearchTopic : public IApp
 {
 public:
@@ -41,7 +45,7 @@ private:
 
 	//Grid datamembers
 	static constexpr int COLUMNS = 20;
-	static constexpr int ROWS = 10;
+	static constexpr int ROWS = 20;
 	unsigned int m_SizeCell = 15;
 	Elite::GridGraph<Elite::GridTerrainNode, Elite::GraphConnection>* m_pGridGraph;
 
@@ -57,11 +61,25 @@ private:
 	//Debug rendering information
 	DebugSettings m_DebugSettings{};
 
+	//Agents
+	struct ImGui_Agent
+	{
+		SteeringAgent* pAgent = nullptr;
+		ISteeringBehavior* pBehavior = nullptr;
+	};
+	std::vector<ImGui_Agent> m_AgentVec{};
+
+	//Walls
+	//std::vector
+
 	//Functions
 	void MakeGridGraph();
 	void UpdateImGui();
 	void CalculateHeatMap();
 	void UpdateVectorMap();
+	Elite::Vector2 CreateVector(int idx) const;
+	void DrawVectors() const;
+	void AddAgent(const Elite::Vector2& position);
 };
 
 #endif
