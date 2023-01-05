@@ -19,7 +19,7 @@ namespace Elite
 		void RenderGraph(IGraph<T_NodeType, T_ConnectionType>* pGraph, bool renderNodes, bool renderConnections, bool renderNodeTxt = true, bool renderConnectionTxt = true) const;
 
 		template<class T_NodeType, class T_ConnectionType>
-		void RenderGraph(GridGraph<T_NodeType, T_ConnectionType>* pGraph, bool renderNodes, bool renderNodeTxt, bool renderConnections, bool renderConnectionsCosts) const;
+		void RenderGraph(GridGraph<T_NodeType, T_ConnectionType>* pGraph, bool renderNodes, bool renderNodeTxt, bool renderConnections, bool renderConnectionsCosts, const std::vector<int>& heatmap) const;
 
 		template<class T_NodeType, class T_ConnectionType>
 		void HighlightNodes(GridGraph<T_NodeType, T_ConnectionType>* pGraph, std::vector<T_NodeType*> path, Color col = HIGHLIGHTED_NODE_COLOR) const;
@@ -32,7 +32,7 @@ namespace Elite
 		void RenderConnection(GraphConnection* con, Elite::Vector2 toPos, Elite::Vector2 fromPos, std::string text, Elite::Color col = DEFAULT_CONNECTION_COLOR, float depth = 0.0f) const;
 
 		// Get correct color/text depending on the pNode/pConnection type
-		template<class T_NodeType, typename = typename enable_if<!is_base_of<GraphNode2D, T_NodeType>::value>::type>
+		template<class T_NodeType, typename = typename std::enable_if<!std::is_base_of<GraphNode2D, T_NodeType>::value>::type>
 		Elite::Color GetNodeColor(T_NodeType* pNode) const;
 		Elite::Color GetNodeColor(GraphNode2D* pNode) const;
 		Elite::Color GetNodeColor(GridTerrainNode* pNode) const;
@@ -71,7 +71,7 @@ namespace Elite
 			{
 				std::string nodeTxt = "";
 				if (renderNodeTxt)
-					nodeTxt = GetNodeText(node);
+					nodeTxt = nodeTxt;
 
 				RenderCircleNode(pGraph->GetNodeWorldPos(node),	nodeTxt, DEFAULT_NODE_RADIUS, GetNodeColor(node));
 			}
@@ -97,7 +97,8 @@ namespace Elite
 		bool renderNodes, 
 		bool renderNodeNumbers,
 		bool renderConnections, 
-		bool renderConnectionsCosts) const
+		bool renderConnectionsCosts,
+		const std::vector<int>& heatmap) const
 	{
 		if (renderNodes)
 		{
@@ -113,8 +114,11 @@ namespace Elite
 					//Node
 					std::string nodeTxt{};
 					if (renderNodeNumbers)
-						nodeTxt = GetNodeText(pGraph->GetNode(idx));
-
+					{
+						std::stringstream ss;
+						ss << heatmap[idx];
+						nodeTxt = ss.str();
+					}
 					RenderRectNode(cellPos, nodeTxt, float(cellSize), GetNodeColor(pGraph->GetNode(idx)), 0.1f);
 				}
 			}
@@ -168,6 +172,7 @@ namespace Elite
 	{
 		return  pNode->GetColor();
 	}
+
 
 	template<class T_ConnectionType>
 	inline Elite::Color GraphRenderer::GetConnectionColor(T_ConnectionType* connection) const

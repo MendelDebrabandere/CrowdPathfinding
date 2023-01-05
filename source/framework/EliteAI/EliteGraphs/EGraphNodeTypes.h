@@ -109,4 +109,6 @@ namespace Elite
 	private:
 		float m_Influence;
 	};
+
+
 }

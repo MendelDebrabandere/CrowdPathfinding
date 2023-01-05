@@ -1,6 +1,7 @@
 #ifndef RESEARCHTOPIC_APPLICATION_H
 #define RESEARCHTOPIC_APPLICATION_H
 
+#include "framework/EliteAI/EliteGraphs/EInfluenceMap.h"
 #include "framework/EliteInterfaces/EIApp.h"
 #include "framework\EliteAI\EliteGraphs\EGridGraph.h"
 #include "framework\EliteAI\EliteGraphs\EliteGraphUtilities\EGraphEditor.h"
@@ -29,7 +30,9 @@ public:
 private:
 	struct DebugSettings
 	{
-		
+		bool showHeatMap = false;
+		bool showNumberHeatMap = false;
+		bool showVectorMap = false;
 	};
 
 	//Datamembers
@@ -45,6 +48,7 @@ private:
 	//VectorField datamembers
 	int destinationIdx = invalid_node_index;
 	std::vector<int> m_HeatMap{};
+	std::vector<Elite::Vector2> m_VectorMap{};
 
 	//Editor and Visualisation
 	Elite::GraphEditor* m_pGraphEditor{ nullptr };
@@ -57,6 +61,7 @@ private:
 	void MakeGridGraph();
 	void UpdateImGui();
 	void CalculateHeatMap();
+	void UpdateVectorMap();
 };
 
 #endif

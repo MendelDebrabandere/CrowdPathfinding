@@ -26,11 +26,11 @@ void App_ResearchTopic::Start()
 	//Create Graph
 	MakeGridGraph();
 
-	m_HeatMap.reserve(COLUMNS * ROWS);
+	m_HeatMap.resize(COLUMNS * ROWS);
 
 	//Setup default start path
 	destinationIdx = 88;
-	//CalculatePath();
+	CalculateHeatMap();
 }
 
 void App_ResearchTopic::Update(float deltaTime)
@@ -47,7 +47,7 @@ void App_ResearchTopic::Update(float deltaTime)
 		//Find closest node to click pos
 		int closestNode = m_pGridGraph->GetNodeIdxAtWorldPos(mousePos);
 		destinationIdx = closestNode;
-		//CalculatePath();
+		CalculateHeatMap();
 	}
 	//IMGUI
 	UpdateImGui();
@@ -55,7 +55,7 @@ void App_ResearchTopic::Update(float deltaTime)
 	//UPDATE/CHECK GRID HAS CHANGED
 	if (m_pGraphEditor->UpdateGraph(m_pGridGraph))
 	{
-		//CalculatePath();
+		CalculateHeatMap();
 	}
 }
 
@@ -63,7 +63,7 @@ void App_ResearchTopic::Render(float deltaTime) const
 {
 	UNREFERENCED_PARAMETER(deltaTime);
 	//Render grid
-	m_pGraphRenderer->RenderGraph(m_pGridGraph, true, false, false, false);
+	m_pGraphRenderer->RenderGraph(m_pGridGraph, true, m_DebugSettings.showNumberHeatMap, false, false, m_HeatMap);
 
 	//Render end node on top if applicable
 	if (destinationIdx != invalid_node_index)
@@ -71,6 +71,19 @@ void App_ResearchTopic::Render(float deltaTime) const
 		m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(destinationIdx) }, END_NODE_COLOR);
 	}
 
+	if (m_DebugSettings.showHeatMap == true)
+	{
+		int furthestIdx{-1};
+		for (int distance :m_HeatMap)
+		{
+			if (distance > furthestIdx && distance != INT_MAX)
+				furthestIdx = distance;
+		}
+		for (int index{}; index < m_HeatMap.size(); ++index)
+		{
+			m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float(m_HeatMap[index]) / furthestIdx, 0, 0 });
+		}
+	}
 }
 
 void App_ResearchTopic::MakeGridGraph()
@@ -107,8 +120,7 @@ void App_ResearchTopic::UpdateImGui()
 		//Elements
 		ImGui::Text("CONTROLS");
 		ImGui::Indent();
-		ImGui::Text("LMB: target");
-		ImGui::Text("RMB: start");
+		ImGui::Text("MMB: target");
 		ImGui::Unindent();
 
 		/*Spacing*/ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing(); ImGui::Spacing();
@@ -124,13 +136,13 @@ void App_ResearchTopic::UpdateImGui()
 		ImGui::Text("Vector Field Research topic");
 		ImGui::Spacing();
 
-		ImGui::Text("Middle Mouse");
-		ImGui::Text("controls");
 		std::string buttonText{ "" };
 
 		buttonText += "Destination Node";
 
-		//ImGui::Checkbox("Grid", &m_DebugSettings.DrawNodes);
+		ImGui::Checkbox("HeatMap", &m_DebugSettings.showHeatMap);
+		ImGui::Checkbox("NumberHeatMap", &m_DebugSettings.showNumberHeatMap);
+		ImGui::Checkbox("VectorMap", &m_DebugSettings.showVectorMap);
 		ImGui::Spacing();
 
 		//End
@@ -139,4 +151,93 @@ void App_ResearchTopic::UpdateImGui()
 	}
 #pragma endregion
 #endif
+}
+
+void App_ResearchTopic::CalculateHeatMap()
+{
+	m_HeatMap.clear();
+	m_HeatMap.resize(COLUMNS * ROWS);
+	std::fill(m_HeatMap.begin(), m_HeatMap.end(), -1);
+
+	std::vector<Elite::GridTerrainNode*> toDoList{};
+	std::vector< Elite::GridTerrainNode*> finishedList{};
+
+	toDoList.push_back(m_pGridGraph->GetNode(destinationIdx));
+
+	int distnaceCounter{ 0 };
+
+	//For as long as there are nodes that have not been calculated
+	while (toDoList.empty() == false)
+	{
+		std::vector<Elite::GridTerrainNode*> newToDoList{};
+
+		//for every node in to do list
+		for (Elite::GridTerrainNode* node : toDoList)
+		{
+			//Set distance
+			m_HeatMap[node->GetIndex()] = distnaceCounter;
+
+			//Check their connections to set up future caluclation
+			for (const Elite::GraphConnection* connection :m_pGridGraph->GetConnections(*node))
+			{
+				bool IsAddedAlready{ false };
+
+				// Setup node to check
+				int nodeToCheck{};
+				if (connection->GetTo() != node->GetIndex())
+					nodeToCheck = connection->GetTo();
+				else
+					nodeToCheck = connection->GetFrom();
+
+				//Check if it is in toDoList
+				for (const Elite::GridTerrainNode* todoNode : toDoList)
+				{
+					if (todoNode->GetIndex() == nodeToCheck)
+					{
+						IsAddedAlready = true;
+						break;
+					}
+				}
+				//Check if it is in newToDoList
+				for (const Elite::GridTerrainNode* newTodoNode : newToDoList)
+				{
+					if (newTodoNode->GetIndex() == nodeToCheck || IsAddedAlready)
+					{
+						IsAddedAlready = true;
+						break;
+					}
+				}
+				//Check if it is in finishedList
+				for (const Elite::GridTerrainNode* finishedNode : finishedList)
+				{
+					if (finishedNode->GetIndex() == nodeToCheck || IsAddedAlready)
+					{
+						IsAddedAlready = true;
+						break;
+					}
+				}
+				//if it is in neither, add it to newToDoList
+				if (IsAddedAlready == false)
+				{
+					newToDoList.push_back(m_pGridGraph->GetNode(nodeToCheck));
+				}
+			}
+			finishedList.push_back(node);
+		}
+
+		toDoList = newToDoList;
+		++distnaceCounter;
+	}
+
+
+	
+
+}
+
+void App_ResearchTopic::UpdateVectorMap()
+{
+	m_VectorMap.clear();
+	m_VectorMap.resize(m_HeatMap.size());
+	std::fill(m_VectorMap.begin(), m_VectorMap.end(), Vector2{0,0});
+
 }
