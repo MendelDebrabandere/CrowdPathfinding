@@ -71,7 +71,11 @@ void App_ResearchTopic::Update(float deltaTime)
 		{
 			const int idx{ m_pGridGraph->GetNodeIdxAtWorldPos(a.pAgent->GetPosition()) };
 			if (idx != -1)
-				a.pAgent->SetLinearVelocity(m_VectorMap[idx] * 15);
+				if (destinationIdx == idx)
+					a.pAgent->SetLinearVelocity(m_pGridGraph->GetNodeWorldPos(destinationIdx) - a.pAgent->GetPosition());
+				else
+					a.pAgent->SetLinearVelocity(m_VectorMap[idx] * 15);
+
 			a.pAgent->Update(deltaTime);
 		}
 	}
@@ -185,6 +189,13 @@ void App_ResearchTopic::UpdateImGui()
 		/*Spacing*/ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing(); ImGui::Spacing();
 
 		ImGui::Text("Vector Field Research topic");
+
+		ImGui::Spacing();
+		ImGui::Text("Stats");
+		ImGui::Indent();
+		ImGui::Text("Amount of Cells: %.1f ", float(m_VectorMap.size()));
+		ImGui::Text("Amount of Agents: %.1f ", float(m_AgentVec.size()));
+		ImGui::Unindent();
 		ImGui::Spacing();
 
 		std::string buttonText{ "" };
@@ -392,11 +403,16 @@ Vector2 App_ResearchTopic::CreateVector(int idx) const
 		if (isNextToWall)
 		{
 			// find the smallest vector
-			Vector2 smallestVector{1000, 1000};
+			Vector2 smallestVector{10000, 0};
 			for (const Vector2& vector : surroundingVectors)
 			{
-				if (smallestVector.MagnitudeSquared() > vector.MagnitudeSquared())
+				// if the vector is smaller than the cached vector + It has to can't be a diagonal vector
+				if (smallestVector.MagnitudeSquared() > vector.MagnitudeSquared() && (vector.x == 0.f || vector.y ==0.f))
 					smallestVector = vector;
+			}
+			if (smallestVector.MagnitudeSquared() <= 0.1f)
+			{
+				smallestVector = Vector2{ m_pGridGraph->GetNodeWorldPos(destinationIdx) - centerPos };
 			}
 			returnVector = -smallestVector;
 			break;
