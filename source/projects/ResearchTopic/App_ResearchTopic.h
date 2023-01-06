@@ -70,7 +70,7 @@ private:
 	std::vector<ImGui_Agent> m_AgentVec{};
 
 	//Walls
-	//std::vector
+	std::vector<RigidBody*> m_WallRBPtrs{};
 
 	//Functions
 	void MakeGridGraph();
@@ -80,6 +80,9 @@ private:
 	Elite::Vector2 CreateVector(int idx) const;
 	void DrawVectors() const;
 	void AddAgent(const Elite::Vector2& position);
+	void HandleInput();
+	void AddWall(int idx);
+	void CheckWallsUpdate();
 };
 
 #endif

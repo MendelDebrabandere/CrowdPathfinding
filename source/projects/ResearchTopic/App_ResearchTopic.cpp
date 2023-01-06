@@ -19,6 +19,11 @@ App_ResearchTopic::~App_ResearchTopic()
 	{
 		SAFE_DELETE(a.pAgent);
 	}
+
+	for (auto a : m_WallRBPtrs)
+	{
+		SAFE_DELETE(a);
+	}
 }
 
 //Functions
@@ -30,6 +35,8 @@ void App_ResearchTopic::Start()
 	DEBUGRENDERER2D->GetActiveCamera()->SetZoom(39.0f);
 	DEBUGRENDERER2D->GetActiveCamera()->SetCenter(Elite::Vector2(73.0f, 35.0f));
 
+	m_WallRBPtrs.resize(COLUMNS * ROWS);
+
 	//Create Graph
 	MakeGridGraph();
 
@@ -37,6 +44,7 @@ void App_ResearchTopic::Start()
 
 	//Setup default start path
 	destinationIdx = 88;
+	CheckWallsUpdate();
 	CalculateHeatMap();
 }
 
@@ -44,23 +52,7 @@ void App_ResearchTopic::Update(float deltaTime)
 {
 	UNREFERENCED_PARAMETER(deltaTime);
 
-	//INPUT
-	bool const middleMousePressed = INPUTMANAGER->IsMouseButtonUp(InputMouseButton::eMiddle);
-	if (middleMousePressed)
-	{
-		MouseData mouseData = { INPUTMANAGER->GetMouseData(Elite::InputType::eMouseButton, Elite::InputMouseButton::eMiddle) };
-		Elite::Vector2 mousePos = DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld({ (float)mouseData.X, (float)mouseData.Y });
-
-		//Find closest node to click pos
-		int closestNode = m_pGridGraph->GetNodeIdxAtWorldPos(mousePos);
-		destinationIdx = closestNode;
-		CalculateHeatMap();
-	}
-	if (INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Up))
-	{
-		MouseData data{ INPUTMANAGER->GetMouseData(InputType{}) };
-		AddAgent(Vector2{ float(data.X), float(data.Y) });
-	}
+	HandleInput();
 
 	//IMGUI
 	UpdateImGui();
@@ -68,6 +60,7 @@ void App_ResearchTopic::Update(float deltaTime)
 	//UPDATE/CHECK GRID HAS CHANGED
 	if (m_pGraphEditor->UpdateGraph(m_pGridGraph))
 	{
+		CheckWallsUpdate();
 		CalculateHeatMap();
 	}
 
@@ -76,7 +69,9 @@ void App_ResearchTopic::Update(float deltaTime)
 	{
 		if (a.pAgent)
 		{
-			a.pAgent->SetLinearVelocity(m_VectorMap[m_pGridGraph->GetNodeIdxAtWorldPos(a.pAgent->GetPosition())] * 15);
+			const int idx{ m_pGridGraph->GetNodeIdxAtWorldPos(a.pAgent->GetPosition()) };
+			if (idx != -1)
+				a.pAgent->SetLinearVelocity(m_VectorMap[idx] * 15);
 			a.pAgent->Update(deltaTime);
 		}
 	}
@@ -131,14 +126,30 @@ void App_ResearchTopic::MakeGridGraph()
 	m_pGridGraph = new GridGraph<GridTerrainNode, GraphConnection>(COLUMNS, ROWS, m_SizeCell, false, false, 1.f, 1.5f);
 
 	//Setup default terrain
-	m_pGridGraph->GetNode(86)->SetTerrainType(TerrainType::Water);
-	m_pGridGraph->GetNode(66)->SetTerrainType(TerrainType::Water);
-	m_pGridGraph->GetNode(67)->SetTerrainType(TerrainType::Water);
-	m_pGridGraph->GetNode(47)->SetTerrainType(TerrainType::Water);
-	m_pGridGraph->RemoveConnectionsToAdjacentNodes(86);
-	m_pGridGraph->RemoveConnectionsToAdjacentNodes(66);
-	m_pGridGraph->RemoveConnectionsToAdjacentNodes(67);
-	m_pGridGraph->RemoveConnectionsToAdjacentNodes(47);
+	//HORIZONTAL
+	for (int i{}; i < COLUMNS; ++i)
+	{
+		//BOTTOM
+		m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
+		AddWall(i);
+		//TOP
+		m_pGridGraph->GetNode(COLUMNS * (ROWS-1) + i)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * (ROWS - 1) + i);
+		AddWall(COLUMNS * (ROWS - 1) + i);
+	}
+	//VERTICAL
+	for (int i{}; i < ROWS; ++i)
+	{
+		//LEFT
+		m_pGridGraph->GetNode(COLUMNS * i)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i);
+		AddWall(COLUMNS * i);
+		//RIGHT
+		m_pGridGraph->GetNode(COLUMNS * i + COLUMNS - 1)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i + COLUMNS - 1);
+		AddWall(COLUMNS * i + COLUMNS - 1);
+	}
 }
 
 void App_ResearchTopic::UpdateImGui()
@@ -418,7 +429,61 @@ void App_ResearchTopic::AddAgent(const Vector2& position)
 	agent.pAgent->SetAutoOrient(true);
 	agent.pAgent->SetMaxLinearSpeed(15);
 	agent.pAgent->SetMass(1);
-	agent.pAgent->SetPosition(Vector2{100,50});
+	agent.pAgent->SetPosition(position);
 
 	m_AgentVec.push_back(agent);
+}
+
+void App_ResearchTopic::HandleInput()
+{
+	//INPUT
+	bool const middleMousePressed = INPUTMANAGER->IsMouseButtonUp(InputMouseButton::eMiddle);
+
+	const MouseData mouseData = { INPUTMANAGER->GetMouseData(Elite::InputType::eMouseButton, Elite::InputMouseButton::eMiddle) };
+	const Vector2 mousePos = { DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld({ (float)mouseData.X, (float)mouseData.Y }) };
+
+	if (middleMousePressed)
+	{
+		//Find closest node to click pos
+		const int closestNode = m_pGridGraph->GetNodeIdxAtWorldPos(mousePos);
+		destinationIdx = closestNode;
+		CalculateHeatMap();
+	}
+	if (INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Up))
+	{
+		AddAgent(/*mousePos +*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
+	}
+}
+
+void App_ResearchTopic::AddWall(int idx)
+{
+	if (!m_WallRBPtrs[idx])
+	{
+		//Create Rigidbody
+		const Elite::RigidBodyDefine define = Elite::RigidBodyDefine(0.01f, 0.1f, Elite::eStatic, false);
+		const Transform transform = Transform(m_pGridGraph->GetNodeWorldPos(idx), Elite::ZeroVector2);
+
+		m_WallRBPtrs[idx] = new RigidBody(define, transform);
+
+		//Add shape
+		Elite::EPhysicsBoxShape shape;
+		shape.width = m_SizeCell;
+		shape.height = m_SizeCell;
+		m_WallRBPtrs[idx]->AddShape(&shape);
+	}
+}
+
+void App_ResearchTopic::CheckWallsUpdate()
+{
+	for (int i{}; i < m_WallRBPtrs.size(); ++i)
+	{
+		if (m_WallRBPtrs[i] && m_pGridGraph->GetNode(i)->GetTerrainType() != TerrainType::Water)
+		{
+			SAFE_DELETE(m_WallRBPtrs[i]);
+		}
+		else if (!m_WallRBPtrs[i] && m_pGridGraph->GetNode(i)->GetTerrainType() == TerrainType::Water)
+		{
+			AddWall(i);
+		}
+	}
 }
