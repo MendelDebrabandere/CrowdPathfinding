@@ -1,0 +1,204 @@
+﻿  stdafx.cpp
+  App_ResearchTopic.cpp
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\projects\ResearchTopic\App_ResearchTopic.cpp(481,17): warning C4244: '=': conversion from 'unsigned int' to 'float', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\projects\ResearchTopic\App_ResearchTopic.cpp(482,18): warning C4244: '=': conversion from 'unsigned int' to 'float', possible loss of data
+  EBehaviorTree.cpp
+  EFiniteStateMachine.cpp
+  EGraphConnectionTypes.cpp
+  EGraphNodeTypes.cpp
+  EGraphEditor.cpp
+  EGraphRenderer.cpp
+  ENavGraph.cpp
+  EGeometry2DTypes.cpp
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(97,26): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(209,27): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(209,22): warning C4244: 'initializing': conversion from '__int64' to 'const int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(467,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(467,38): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(473,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(473,38): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(479,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteGeometry\EGeometry2DTypes.cpp(479,38): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+  EInputManager.cpp
+  EMatrix2x3.cpp
+  ERigidBodyBox2D.cpp
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\ElitePhysics\Box2DIntegration\ERigidBodyBox2D.cpp(103,1): warning C4267: 'argument': conversion from 'size_t' to 'int32', possible loss of data
+  EPhysicsWorldBox2D.cpp
+  ECamera2D.cpp
+  SDLDebugRenderer2D.cpp
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteRendering\SDLIntegration\SDLDebugRenderer2D\SDLDebugRenderer2D.cpp(80,28): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteRendering\SDLIntegration\SDLDebugRenderer2D\SDLDebugRenderer2D.cpp(88,28): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\framework\EliteRendering\SDLIntegration\SDLDebugRenderer2D\SDLDebugRenderer2D.cpp(99,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  SDLFrame.cpp
+  ETimer_SDL.cpp
+  EImmediateUI.cpp
+  SDLWindow.cpp
+  gl3w.c
+  Generating Code...
+  Compiling...
+  main.cpp
+  SandboxAgent.cpp
+  CombinedSteeringBehaviors.cpp
+  Flock.cpp
+  FlockingSteeringBehaviors.cpp
+  SpacePartitioning.cpp
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\projects\Movement\SteeringBehaviors\SpacePartitioning\SpacePartitioning.cpp(184,37): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\projects\Movement\SteeringBehaviors\SpacePartitioning\SpacePartitioning.cpp(187,28): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Obstacle.cpp
+  SteeringAgent.cpp
+  SteeringBehaviors.cpp
+  AgarioAgent.cpp
+  AgarioContactListener.cpp
+  AgarioFood.cpp
+  BaseAgent.cpp
+  NavigationColliderElement.cpp
+  Generating Code...
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "struct ImGuiIO & __cdecl ImGui::GetIO(void)" (?GetIO@ImGui@@YAAEAUImGuiIO@@XZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EImmediateUI.obj : error LNK2001: unresolved external symbol "struct ImGuiIO & __cdecl ImGui::GetIO(void)" (?GetIO@ImGui@@YAAEAUImGuiIO@@XZ)
+Flock.obj : error LNK2001: unresolved external symbol "struct ImGuiIO & __cdecl ImGui::GetIO(void)" (?GetIO@ImGui@@YAAEAUImGuiIO@@XZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "bool __cdecl ImGui::Begin(char const *,bool *,int)" (?Begin@ImGui@@YA_NPEBDPEA_NH@Z) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui::Begin(char const *,bool *,int)" (?Begin@ImGui@@YA_NPEBDPEA_NH@Z)
+SDLDebugRenderer2D.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui::Begin(char const *,bool *,int)" (?Begin@ImGui@@YA_NPEBDPEA_NH@Z)
+Flock.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui::Begin(char const *,bool *,int)" (?Begin@ImGui@@YA_NPEBDPEA_NH@Z)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::End(void)" (?End@ImGui@@YAXXZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::End(void)" (?End@ImGui@@YAXXZ)
+SDLDebugRenderer2D.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::End(void)" (?End@ImGui@@YAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::End(void)" (?End@ImGui@@YAXXZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::SetNextWindowPos(struct ImVec2 const &,int)" (?SetNextWindowPos@ImGui@@YAXAEBUImVec2@@H@Z) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::SetNextWindowPos(struct ImVec2 const &,int)" (?SetNextWindowPos@ImGui@@YAXAEBUImVec2@@H@Z)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::SetNextWindowPos(struct ImVec2 const &,int)" (?SetNextWindowPos@ImGui@@YAXAEBUImVec2@@H@Z)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::SetNextWindowSize(struct ImVec2 const &,int)" (?SetNextWindowSize@ImGui@@YAXAEBUImVec2@@H@Z) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::SetNextWindowSize(struct ImVec2 const &,int)" (?SetNextWindowSize@ImGui@@YAXAEBUImVec2@@H@Z)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::SetNextWindowSize(struct ImVec2 const &,int)" (?SetNextWindowSize@ImGui@@YAXAEBUImVec2@@H@Z)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::PushAllowKeyboardFocus(bool)" (?PushAllowKeyboardFocus@ImGui@@YAX_N@Z) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::PushAllowKeyboardFocus(bool)" (?PushAllowKeyboardFocus@ImGui@@YAX_N@Z)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::PushAllowKeyboardFocus(bool)" (?PushAllowKeyboardFocus@ImGui@@YAX_N@Z)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::PopAllowKeyboardFocus(void)" (?PopAllowKeyboardFocus@ImGui@@YAXXZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::PopAllowKeyboardFocus(void)" (?PopAllowKeyboardFocus@ImGui@@YAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::PopAllowKeyboardFocus(void)" (?PopAllowKeyboardFocus@ImGui@@YAXXZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Separator(void)" (?Separator@ImGui@@YAXXZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Separator(void)" (?Separator@ImGui@@YAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Separator(void)" (?Separator@ImGui@@YAXXZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Spacing(void)" (?Spacing@ImGui@@YAXXZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Spacing(void)" (?Spacing@ImGui@@YAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Spacing(void)" (?Spacing@ImGui@@YAXXZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Indent(void)" (?Indent@ImGui@@YAXXZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Indent(void)" (?Indent@ImGui@@YAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Indent(void)" (?Indent@ImGui@@YAXXZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Unindent(void)" (?Unindent@ImGui@@YAXXZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Unindent(void)" (?Unindent@ImGui@@YAXXZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Text(char const *,...)" (?Text@ImGui@@YAXPEBDZZ) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Text(char const *,...)" (?Text@ImGui@@YAXPEBDZZ)
+Flock.obj : error LNK2001: unresolved external symbol "void __cdecl ImGui::Text(char const *,...)" (?Text@ImGui@@YAXPEBDZZ)
+App_ResearchTopic.obj : error LNK2019: unresolved external symbol "bool __cdecl ImGui::Checkbox(char const *,bool *)" (?Checkbox@ImGui@@YA_NPEBDPEA_N@Z) referenced in function "private: void __cdecl App_ResearchTopic::UpdateImGui(void)" (?UpdateImGui@App_ResearchTopic@@AEAAXXZ)
+Flock.obj : error LNK2001: unresolved external symbol "bool __cdecl ImGui::Checkbox(char const *,bool *)" (?Checkbox@ImGui@@YA_NPEBDPEA_N@Z)
+BaseAgent.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+NavigationColliderElement.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+stdafx.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SteeringBehaviors.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+AgarioAgent.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+AgarioContactListener.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+AgarioFood.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+FlockingSteeringBehaviors.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SpacePartitioning.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+Obstacle.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SteeringAgent.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+main.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SandboxAgent.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+CombinedSteeringBehaviors.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+Flock.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+ETimer_SDL.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EImmediateUI.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SDLWindow.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+gl3w.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EPhysicsWorldBox2D.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+ECamera2D.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SDLDebugRenderer2D.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+SDLFrame.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EGeometry2DTypes.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EInputManager.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EMatrix2x3.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EGraphNodeTypes.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EGraphEditor.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EGraphRenderer.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+ENavGraph.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+App_ResearchTopic.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EBehaviorTree.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EFiniteStateMachine.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EGraphConnectionTypes.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) class VisualLeakDetector g_vld" (__imp_?g_vld@@3VVisualLeakDetector@@A)
+EGraphEditor.obj : error LNK2019: unresolved external symbol "bool __cdecl ImGui::Combo(char const *,int *,char const *,int)" (?Combo@ImGui@@YA_NPEBDPEAH0H@Z) referenced in function "public: bool __cdecl Elite::GraphEditor::UpdateGraph(class Elite::GridGraph<class Elite::GridTerrainNode,class Elite::GraphConnection> *)" (?UpdateGraph@GraphEditor@Elite@@QEAA_NPEAV?$GridGraph@VGridTerrainNode@Elite@@VGraphConnection@2@@2@@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual class b2Shape * __cdecl b2CircleShape::Clone(class b2BlockAllocator *)const " (?Clone@b2CircleShape@@UEBAPEAVb2Shape@@PEAVb2BlockAllocator@@@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual int __cdecl b2CircleShape::GetChildCount(void)const " (?GetChildCount@b2CircleShape@@UEBAHXZ)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual bool __cdecl b2CircleShape::TestPoint(struct b2Transform const &,struct b2Vec2 const &)const " (?TestPoint@b2CircleShape@@UEBA_NAEBUb2Transform@@AEBUb2Vec2@@@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual bool __cdecl b2CircleShape::RayCast(struct b2RayCastOutput *,struct b2RayCastInput const &,struct b2Transform const &,int)const " (?RayCast@b2CircleShape@@UEBA_NPEAUb2RayCastOutput@@AEBUb2RayCastInput@@AEBUb2Transform@@H@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual void __cdecl b2CircleShape::ComputeAABB(struct b2AABB *,struct b2Transform const &,int)const " (?ComputeAABB@b2CircleShape@@UEBAXPEAUb2AABB@@AEBUb2Transform@@H@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual void __cdecl b2CircleShape::ComputeMass(struct b2MassData *,float)const " (?ComputeMass@b2CircleShape@@UEBAXPEAUb2MassData@@M@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual class b2Shape * __cdecl b2PolygonShape::Clone(class b2BlockAllocator *)const " (?Clone@b2PolygonShape@@UEBAPEAVb2Shape@@PEAVb2BlockAllocator@@@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual int __cdecl b2PolygonShape::GetChildCount(void)const " (?GetChildCount@b2PolygonShape@@UEBAHXZ)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2PolygonShape::Set(struct b2Vec2 const *,int)" (?Set@b2PolygonShape@@QEAAXPEBUb2Vec2@@H@Z) referenced in function "public: void __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::AddShape(struct Elite::EPhysicsShape *)" (?AddShape@?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAAXPEAUEPhysicsShape@2@@Z)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2PolygonShape::SetAsBox(float,float,struct b2Vec2 const &,float)" (?SetAsBox@b2PolygonShape@@QEAAXMMAEBUb2Vec2@@M@Z) referenced in function "public: void __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::AddShape(struct Elite::EPhysicsShape *)" (?AddShape@?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAAXPEAUEPhysicsShape@2@@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual bool __cdecl b2PolygonShape::TestPoint(struct b2Transform const &,struct b2Vec2 const &)const " (?TestPoint@b2PolygonShape@@UEBA_NAEBUb2Transform@@AEBUb2Vec2@@@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual bool __cdecl b2PolygonShape::RayCast(struct b2RayCastOutput *,struct b2RayCastInput const &,struct b2Transform const &,int)const " (?RayCast@b2PolygonShape@@UEBA_NPEAUb2RayCastOutput@@AEBUb2RayCastInput@@AEBUb2Transform@@H@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual void __cdecl b2PolygonShape::ComputeAABB(struct b2AABB *,struct b2Transform const &,int)const " (?ComputeAABB@b2PolygonShape@@UEBAXPEAUb2AABB@@AEBUb2Transform@@H@Z)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "public: virtual void __cdecl b2PolygonShape::ComputeMass(struct b2MassData *,float)const " (?ComputeMass@b2PolygonShape@@UEBAXPEAUb2MassData@@M@Z)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: class b2Fixture * __cdecl b2Body::CreateFixture(struct b2FixtureDef const *)" (?CreateFixture@b2Body@@QEAAPEAVb2Fixture@@PEBUb2FixtureDef@@@Z) referenced in function "public: void __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::AddShape(struct Elite::EPhysicsShape *)" (?AddShape@?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAAXPEAUEPhysicsShape@2@@Z)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2Body::DestroyFixture(class b2Fixture *)" (?DestroyFixture@b2Body@@QEAAXPEAVb2Fixture@@@Z) referenced in function "public: void __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::RemoveAllShapes(void)" (?RemoveAllShapes@?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAAXXZ)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2Body::SetTransform(struct b2Vec2 const &,float)" (?SetTransform@b2Body@@QEAAXAEBUb2Vec2@@M@Z) referenced in function "public: void __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::SetPosition(struct Elite::Vector2 const &)" (?SetPosition@?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAAXAEBUVector2@2@@Z)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2Body::SetMassData(struct b2MassData const *)" (?SetMassData@b2Body@@QEAAXPEBUb2MassData@@@Z) referenced in function "public: void __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::SetMass(float)" (?SetMass@?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAAXM@Z)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: class b2Body * __cdecl b2World::CreateBody(struct b2BodyDef const *)" (?CreateBody@b2World@@QEAAPEAVb2Body@@PEBUb2BodyDef@@@Z) referenced in function "public: __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>(struct Elite::RigidBodyDefine const &,struct Elite::ETransform<struct Elite::Vector2,struct Elite::Vector2> const &,enum PhysicsFlags)" (??0?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAA@AEBURigidBodyDefine@1@AEBU?$ETransform@UVector2@Elite@@U12@@1@W4PhysicsFlags@@@Z)
+ERigidBodyBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2World::DestroyBody(class b2Body *)" (?DestroyBody@b2World@@QEAAXPEAVb2Body@@@Z) referenced in function "public: __cdecl Elite::RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>::~RigidBodyBase<struct Elite::Vector2,struct Elite::Vector2>(void)" (??1?$RigidBodyBase@UVector2@Elite@@U12@@Elite@@QEAA@XZ)
+ERigidBodyBox2D.obj : error LNK2001: unresolved external symbol "struct b2Vec2 const b2Vec2_zero" (?b2Vec2_zero@@3Ub2Vec2@@B)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: __cdecl b2Draw::b2Draw(void)" (??0b2Draw@@QEAA@XZ) referenced in function "public: __cdecl Box2DRenderer::Box2DRenderer(void)" (??0Box2DRenderer@@QEAA@XZ)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2Draw::SetFlags(unsigned int)" (?SetFlags@b2Draw@@QEAAXI@Z) referenced in function "private: void __cdecl Elite::EPhysicsWorld<class b2World *>::Initialize(void)" (?Initialize@?$EPhysicsWorld@PEAVb2World@@@Elite@@AEAAXXZ)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: __cdecl b2World::b2World(struct b2Vec2 const &)" (??0b2World@@QEAA@AEBUb2Vec2@@@Z) referenced in function "private: void __cdecl Elite::EPhysicsWorld<class b2World *>::Initialize(void)" (?Initialize@?$EPhysicsWorld@PEAVb2World@@@Elite@@AEAAXXZ)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: __cdecl b2World::~b2World(void)" (??1b2World@@QEAA@XZ) referenced in function "public: void * __cdecl b2World::`scalar deleting destructor'(unsigned int)" (??_Gb2World@@QEAAPEAXI@Z)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2World::SetDebugDraw(class b2Draw *)" (?SetDebugDraw@b2World@@QEAAXPEAVb2Draw@@@Z) referenced in function "private: void __cdecl Elite::EPhysicsWorld<class b2World *>::Initialize(void)" (?Initialize@?$EPhysicsWorld@PEAVb2World@@@Elite@@AEAAXXZ)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2World::Step(float,int,int)" (?Step@b2World@@QEAAXMHH@Z) referenced in function "public: void __cdecl Elite::EPhysicsWorld<class b2World *>::Simulate(float)" (?Simulate@?$EPhysicsWorld@PEAVb2World@@@Elite@@QEAAXM@Z)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2World::DrawDebugData(void)" (?DrawDebugData@b2World@@QEAAXXZ) referenced in function "public: void __cdecl Elite::EPhysicsWorld<class b2World *>::RenderDebug(void)const " (?RenderDebug@?$EPhysicsWorld@PEAVb2World@@@Elite@@QEBAXXZ)
+EPhysicsWorldBox2D.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2World::SetAllowSleeping(bool)" (?SetAllowSleeping@b2World@@QEAAX_N@Z) referenced in function "private: void __cdecl Elite::EPhysicsWorld<class b2World *>::Initialize(void)" (?Initialize@?$EPhysicsWorld@PEAVb2World@@@Elite@@AEAAXXZ)
+SDLDebugRenderer2D.obj : error LNK2019: unresolved external symbol "struct ImGuiStyle & __cdecl ImGui::GetStyle(void)" (?GetStyle@ImGui@@YAAEAUImGuiStyle@@XZ) referenced in function "public: void __cdecl Elite::SDLDebugRenderer2D::DrawString(struct Elite::Vector2 const &,char const *,...)const " (?DrawString@SDLDebugRenderer2D@Elite@@QEBAXAEBUVector2@2@PEBDZZ)
+EImmediateUI.obj : error LNK2001: unresolved external symbol "struct ImGuiStyle & __cdecl ImGui::GetStyle(void)" (?GetStyle@ImGui@@YAAEAUImGuiStyle@@XZ)
+SDLDebugRenderer2D.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::SetCursorPos(struct ImVec2 const &)" (?SetCursorPos@ImGui@@YAXAEBUImVec2@@@Z) referenced in function "public: void __cdecl Elite::SDLDebugRenderer2D::DrawString(struct Elite::Vector2 const &,char const *,...)const " (?DrawString@SDLDebugRenderer2D@Elite@@QEBAXAEBUVector2@2@PEBDZZ)
+SDLDebugRenderer2D.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::TextColoredV(struct ImVec4 const &,char const *,char *)" (?TextColoredV@ImGui@@YAXAEBUImVec4@@PEBDPEAD@Z) referenced in function "public: void __cdecl Elite::SDLDebugRenderer2D::DrawString(struct Elite::Vector2 const &,char const *,...)const " (?DrawString@SDLDebugRenderer2D@Elite@@QEBAXAEBUVector2@2@PEBDZZ)
+SDLFrame.obj : error LNK2019: unresolved external symbol SDL_GetError referenced in function "public: void __cdecl Elite::SDLFrame::CreateFrame(class Elite::SDLWindow *)" (?CreateFrame@SDLFrame@Elite@@QEAAXPEAVSDLWindow@2@@Z)
+SDLFrame.obj : error LNK2019: unresolved external symbol SDL_GL_CreateContext referenced in function "public: void __cdecl Elite::SDLFrame::CreateFrame(class Elite::SDLWindow *)" (?CreateFrame@SDLFrame@Elite@@QEAAXPEAVSDLWindow@2@@Z)
+SDLFrame.obj : error LNK2019: unresolved external symbol SDL_GL_SetSwapInterval referenced in function "public: void __cdecl Elite::SDLFrame::CreateFrame(class Elite::SDLWindow *)" (?CreateFrame@SDLFrame@Elite@@QEAAXPEAVSDLWindow@2@@Z)
+SDLFrame.obj : error LNK2019: unresolved external symbol SDL_GL_SwapWindow referenced in function "public: void __cdecl Elite::SDLFrame::SubmitAndFlipFrame(class Elite::EImmediateUI *)" (?SubmitAndFlipFrame@SDLFrame@Elite@@QEAAXPEAVEImmediateUI@2@@Z)
+SDLFrame.obj : error LNK2019: unresolved external symbol SDL_GL_DeleteContext referenced in function "public: __cdecl Elite::SDLFrame::~SDLFrame(void)" (??1SDLFrame@Elite@@QEAA@XZ)
+ETimer_SDL.obj : error LNK2019: unresolved external symbol SDL_GetPerformanceCounter referenced in function "public: void __cdecl Elite::ETimer<0>::Reset(void)" (?Reset@?$ETimer@$0A@@Elite@@QEAAXXZ)
+ETimer_SDL.obj : error LNK2019: unresolved external symbol SDL_GetPerformanceFrequency referenced in function "public: __cdecl Elite::ETimer<0>::ETimer<0>(void)" (??0?$ETimer@$0A@@Elite@@QEAA@XZ)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_SetClipboardText referenced in function "private: static void __cdecl Elite::EImmediateUI::SetClipboardText(char const *)" (?SetClipboardText@EImmediateUI@Elite@@CAXPEBD@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GetClipboardText referenced in function "private: static char const * __cdecl Elite::EImmediateUI::GetClipboardText(void)" (?GetClipboardText@EImmediateUI@Elite@@CAPEBDXZ)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GetWindowFlags referenced in function "public: void __cdecl Elite::EImmediateUI::NewFrame(struct SDL_Window *,float)" (?NewFrame@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@M@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GetWindowSize referenced in function "public: void __cdecl Elite::EImmediateUI::NewFrame(struct SDL_Window *,float)" (?NewFrame@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@M@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GL_GetDrawableSize referenced in function "public: void __cdecl Elite::EImmediateUI::NewFrame(struct SDL_Window *,float)" (?NewFrame@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@M@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GetModState referenced in function "public: void __cdecl Elite::EImmediateUI::EventProcessing(void)" (?EventProcessing@EImmediateUI@Elite@@QEAAXXZ)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GetMouseState referenced in function "public: void __cdecl Elite::EImmediateUI::NewFrame(struct SDL_Window *,float)" (?NewFrame@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@M@Z)
+SDLWindow.obj : error LNK2001: unresolved external symbol SDL_GetMouseState
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_ShowCursor referenced in function "public: void __cdecl Elite::EImmediateUI::NewFrame(struct SDL_Window *,float)" (?NewFrame@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@M@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_PollEvent referenced in function "public: void __cdecl Elite::EImmediateUI::EventProcessing(void)" (?EventProcessing@EImmediateUI@Elite@@QEAAXXZ)
+SDLWindow.obj : error LNK2001: unresolved external symbol SDL_PollEvent
+EImmediateUI.obj : error LNK2019: unresolved external symbol SDL_GetWindowWMInfo referenced in function "public: void __cdecl Elite::EImmediateUI::Initialize(struct SDL_Window *)" (?Initialize@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::NewFrame(void)" (?NewFrame@ImGui@@YAXXZ) referenced in function "public: void __cdecl Elite::EImmediateUI::NewFrame(struct SDL_Window *,float)" (?NewFrame@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@M@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Render(void)" (?Render@ImGui@@YAXXZ) referenced in function "public: void __cdecl Elite::EImmediateUI::Render(void)" (?Render@EImmediateUI@Elite@@QEAAXXZ)
+EImmediateUI.obj : error LNK2019: unresolved external symbol "void __cdecl ImGui::Shutdown(void)" (?Shutdown@ImGui@@YAXXZ) referenced in function "public: __cdecl Elite::EImmediateUI::~EImmediateUI(void)" (??1EImmediateUI@Elite@@QEAA@XZ)
+EImmediateUI.obj : error LNK2019: unresolved external symbol "public: void __cdecl ImGuiIO::AddInputCharactersUTF8(char const *)" (?AddInputCharactersUTF8@ImGuiIO@@QEAAXPEBD@Z) referenced in function "public: void __cdecl Elite::EImmediateUI::EventProcessing(void)" (?EventProcessing@EImmediateUI@Elite@@QEAAXXZ)
+EImmediateUI.obj : error LNK2019: unresolved external symbol "public: void __cdecl ImDrawData::ScaleClipRects(struct ImVec2 const &)" (?ScaleClipRects@ImDrawData@@QEAAXAEBUImVec2@@@Z) referenced in function "public: static void __cdecl Elite::EImmediateUI::StaticRender(struct ImDrawData *)" (?StaticRender@EImmediateUI@Elite@@SAXPEAUImDrawData@@@Z)
+EImmediateUI.obj : error LNK2019: unresolved external symbol "public: void __cdecl ImFontAtlas::GetTexDataAsRGBA32(unsigned char * *,int *,int *,int *)" (?GetTexDataAsRGBA32@ImFontAtlas@@QEAAXPEAPEAEPEAH11@Z) referenced in function "public: void __cdecl Elite::EImmediateUI::Initialize(struct SDL_Window *)" (?Initialize@EImmediateUI@Elite@@QEAAXPEAUSDL_Window@@@Z)
+SDLWindow.obj : error LNK2019: unresolved external symbol SDL_GetCurrentDisplayMode referenced in function "public: void __cdecl Elite::SDLWindow::CreateEWindow(struct Elite::WindowParams const &)" (?CreateEWindow@SDLWindow@Elite@@QEAAXAEBUWindowParams@2@@Z)
+SDLWindow.obj : error LNK2019: unresolved external symbol SDL_CreateWindow referenced in function "public: void __cdecl Elite::SDLWindow::CreateEWindow(struct Elite::WindowParams const &)" (?CreateEWindow@SDLWindow@Elite@@QEAAXAEBUWindowParams@2@@Z)
+SDLWindow.obj : error LNK2019: unresolved external symbol SDL_DestroyWindow referenced in function "public: __cdecl Elite::SDLWindow::~SDLWindow(void)" (??1SDLWindow@Elite@@QEAA@XZ)
+SDLWindow.obj : error LNK2019: unresolved external symbol SDL_GL_SetAttribute referenced in function "public: void __cdecl Elite::SDLWindow::CreateEWindow(struct Elite::WindowParams const &)" (?CreateEWindow@SDLWindow@Elite@@QEAAXAEBUWindowParams@2@@Z)
+SDLWindow.obj : error LNK2019: unresolved external symbol SDL_PushEvent referenced in function "public: void __cdecl Elite::SDLWindow::RequestShutdown(void)" (?RequestShutdown@SDLWindow@Elite@@QEAAXXZ)
+SDLWindow.obj : error LNK2019: unresolved external symbol SDL_Init referenced in function "public: void __cdecl Elite::SDLWindow::CreateEWindow(struct Elite::WindowParams const &)" (?CreateEWindow@SDLWindow@Elite@@QEAAXAEBUWindowParams@2@@Z)
+main.obj : error LNK2019: unresolved external symbol SDL_SetWindowPosition referenced in function "public: void __cdecl Elite::SDLWindow::SetWindowPosition(int,int)" (?SetWindowPosition@SDLWindow@Elite@@QEAAXHH@Z)
+Flock.obj : error LNK2019: unresolved external symbol "bool __cdecl ImGui::SliderFloat(char const *,float *,float,float,char const *,float)" (?SliderFloat@ImGui@@YA_NPEBDPEAMMM0M@Z) referenced in function "public: void __cdecl Flock::UpdateAndRenderUI(void)" (?UpdateAndRenderUI@Flock@@QEAAXXZ)
+AgarioContactListener.obj : error LNK2019: unresolved external symbol "public: void __cdecl b2World::SetContactListener(class b2ContactListener *)" (?SetContactListener@b2World@@QEAAXPEAVb2ContactListener@@@Z) referenced in function "public: __cdecl AgarioContactListener::AgarioContactListener(void)" (??0AgarioContactListener@@QEAA@XZ)
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\..\lib\Box2D32d.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\..\lib\SDL2main.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\..\lib\SDL2.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\..\lib\VLD\Win32\vld.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\..\lib\IMGUI_LIB32d.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\..\lib\GPP_PluginBase_d.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\mende\OneDrive\Bureaublad\Game dev stuff\Gameplay programming\GPP_Exam\ResearchTopic\source\x64\Debug\GPP_Framework.exe : fatal error LNK1120: 79 unresolved externals

@@ -44,8 +44,8 @@ private:
 	Elite::Vector2 m_TargetPosition = Elite::ZeroVector2;
 
 	//Grid datamembers
-	static constexpr int COLUMNS = 20;
-	static constexpr int ROWS = 20;
+	static constexpr int COLUMNS = 100;
+	static constexpr int ROWS = 100;
 	unsigned int m_SizeCell = 15;
 	Elite::GridGraph<Elite::GridTerrainNode, Elite::GraphConnection>* m_pGridGraph;
 
@@ -62,12 +62,7 @@ private:
 	DebugSettings m_DebugSettings{};
 
 	//Agents
-	struct ImGui_Agent
-	{
-		SteeringAgent* pAgent = nullptr;
-		ISteeringBehavior* pBehavior = nullptr;
-	};
-	std::vector<ImGui_Agent> m_AgentVec{};
+	std::vector<SteeringAgent*> m_AgentVec{};
 
 	//Walls
 	std::vector<RigidBody*> m_WallRBPtrs{};
@@ -76,13 +71,14 @@ private:
 	void MakeGridGraph();
 	void UpdateImGui();
 	void CalculateHeatMap();
-	void UpdateVectorMap();
+	void ResetVectorMap();
 	Elite::Vector2 CreateVector(int idx) const;
 	void DrawVectors() const;
 	void AddAgent(const Elite::Vector2& position);
 	void HandleInput();
 	void AddWall(int idx);
 	void CheckWallsUpdate();
+	void UpdateAgentAndVectors(SteeringAgent* agent, float dTime);
 };
 
 #endif

@@ -36,6 +36,10 @@
     <ClCompile Include="projects\Shared\Agario\AgarioFood.cpp" />
     <ClCompile Include="framework\EliteAI\EliteDecisionMaking\EliteBehaviorTree\EBehaviorTree.cpp" />
     <ClCompile Include="projects\ResearchTopic\App_ResearchTopic.cpp" />
+    <ClCompile Include="projects\ResearchTopic\HeatmapManager.cpp" />
+    <ClCompile Include="projects\ResearchTopic\VectorMapManager.cpp" />
+    <ClCompile Include="projects\ResearchTopic\AgentManager.cpp" />
+    <ClCompile Include="projects\ResearchTopic\WorldManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="projects\App_Selector.h" />
@@ -121,6 +125,10 @@
     <ClInclude Include="framework\EliteAI\EliteDecisionMaking\EliteBehaviorTree\EBehaviorTree.h" />
     <ClInclude Include="framework\EliteAI\EliteGraphs\EInfluenceMap.h" />
     <ClInclude Include="projects\ResearchTopic\App_ResearchTopic.h" />
+    <ClInclude Include="projects\ResearchTopic\HeatmapManager.h" />
+    <ClInclude Include="projects\ResearchTopic\VectorMapManager.h" />
+    <ClInclude Include="projects\ResearchTopic\AgentManager.h" />
+    <ClInclude Include="projects\ResearchTopic\WorldManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />

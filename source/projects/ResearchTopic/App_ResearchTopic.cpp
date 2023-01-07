@@ -17,7 +17,7 @@ App_ResearchTopic::~App_ResearchTopic()
 
 	for (auto a : m_AgentVec)
 	{
-		SAFE_DELETE(a.pAgent);
+		SAFE_DELETE(a);
 	}
 
 	for (auto a : m_WallRBPtrs)
@@ -46,6 +46,7 @@ void App_ResearchTopic::Start()
 	destinationIdx = 88;
 	CheckWallsUpdate();
 	CalculateHeatMap();
+	ResetVectorMap();
 }
 
 void App_ResearchTopic::Update(float deltaTime)
@@ -62,21 +63,22 @@ void App_ResearchTopic::Update(float deltaTime)
 	{
 		CheckWallsUpdate();
 		CalculateHeatMap();
+		ResetVectorMap();
 	}
 
 	//UPDATE AGENTS
-	for (const ImGui_Agent& a : m_AgentVec)
+	for (SteeringAgent* a : m_AgentVec)
 	{
-		if (a.pAgent)
+		if (a)
 		{
-			const int idx{ m_pGridGraph->GetNodeIdxAtWorldPos(a.pAgent->GetPosition()) };
+			const int idx{ m_pGridGraph->GetNodeIdxAtWorldPos(a->GetPosition()) };
 			if (idx != -1)
 				if (destinationIdx == idx)
-					a.pAgent->SetLinearVelocity(m_pGridGraph->GetNodeWorldPos(destinationIdx) - a.pAgent->GetPosition());
+					a->SetLinearVelocity(m_pGridGraph->GetNodeWorldPos(destinationIdx) - a->GetPosition());
 				else
-					a.pAgent->SetLinearVelocity(m_VectorMap[idx] * 15);
+					a->SetLinearVelocity(m_VectorMap[idx] * 15);
 
-			a.pAgent->Update(deltaTime);
+			UpdateAgentAndVectors(a, deltaTime);
 		}
 	}
 
@@ -86,12 +88,12 @@ void App_ResearchTopic::Render(float deltaTime) const
 {
 	UNREFERENCED_PARAMETER(deltaTime);
 	//Render grid
-	m_pGraphRenderer->RenderGraph(m_pGridGraph, true, m_DebugSettings.showNumberHeatMap, false, false, m_HeatMap);
+	//m_pGraphRenderer->RenderGraph(m_pGridGraph, true, m_DebugSettings.showNumberHeatMap, false, false, m_HeatMap);
 
 	//Render end node on top if applicable
 	if (destinationIdx != invalid_node_index)
 	{
-		m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(destinationIdx) }, END_NODE_COLOR);
+		//m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(destinationIdx) }, END_NODE_COLOR);
 	}
 
 	if (m_DebugSettings.showHeatMap == true)
@@ -105,9 +107,10 @@ void App_ResearchTopic::Render(float deltaTime) const
 		for (int index{}; index < m_HeatMap.size(); ++index)
 		{
 			if (m_HeatMap[index] != -1)
-				m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float(m_HeatMap[index]) / furthestIdx, 0, 0 });
-			else
-				m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 0,0,1});
+			{}
+				//m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float(m_HeatMap[index]) / furthestIdx, 0, 0 });
+			//else
+				//m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 0,0,1});
 		}
 	}
 
@@ -116,11 +119,11 @@ void App_ResearchTopic::Render(float deltaTime) const
 		DrawVectors();
 	}
 
-	for (const ImGui_Agent& a : m_AgentVec)
+	for (SteeringAgent* a : m_AgentVec)
 	{
-		if (a.pAgent)
+		if (a)
 		{
-			a.pAgent->Render(deltaTime);
+			a->Render(deltaTime);
 		}
 	}
 }
@@ -226,7 +229,7 @@ void App_ResearchTopic::CalculateHeatMap()
 
 	toDoList.push_back(m_pGridGraph->GetNode(destinationIdx));
 
-	int distnaceCounter{ 0 };
+	int distanceCounter{ 0 };
 
 	//For as long as there are nodes that have not been calculated
 	while (toDoList.empty() == false)
@@ -237,7 +240,7 @@ void App_ResearchTopic::CalculateHeatMap()
 		for (Elite::GridTerrainNode* node : toDoList)
 		{
 			//Set distance
-			m_HeatMap[node->GetIndex()] = distnaceCounter;
+			m_HeatMap[node->GetIndex()] = distanceCounter;
 
 			//Check their connections to set up future caluclation
 			for (const Elite::GraphConnection* connection :m_pGridGraph->GetConnections(*node))
@@ -264,7 +267,7 @@ void App_ResearchTopic::CalculateHeatMap()
 				for (const Elite::GridTerrainNode* newTodoNode : newToDoList)
 				{
 					if (newTodoNode->GetIndex() == nodeToCheck || IsAddedAlready)
-					{
+				{
 						IsAddedAlready = true;
 						break;
 					}
@@ -288,22 +291,15 @@ void App_ResearchTopic::CalculateHeatMap()
 		}
 
 		toDoList = newToDoList;
-		++distnaceCounter;
+		++distanceCounter;
 	}
-	UpdateVectorMap();
 }
 
-void App_ResearchTopic::UpdateVectorMap()
+void App_ResearchTopic::ResetVectorMap()
 {
 	m_VectorMap.clear();
 	m_VectorMap.resize(m_HeatMap.size());
 	std::fill(m_VectorMap.begin(), m_VectorMap.end(), Vector2{0,0});
-
-	// for all nodes on the grid
-	for (int index{}; index < m_VectorMap.size(); ++index)
-	{
-		m_VectorMap[index] = CreateVector(index);
-	}
 }
 
 Vector2 App_ResearchTopic::CreateVector(int idx) const
@@ -399,24 +395,24 @@ Vector2 App_ResearchTopic::CreateVector(int idx) const
 	Vector2 returnVector{};
 	for (const Vector2& vector: surroundingVectors)
 	{
-		//If the square is next to a wall
-		if (isNextToWall)
-		{
-			// find the smallest vector
+	//If the square is next to a wall
+	if (isNextToWall)
+	{
+		// find the smallest vector
 			Vector2 smallestVector{10000, 0};
-			for (const Vector2& vector : surroundingVectors)
-			{
-				// if the vector is smaller than the cached vector + It has to can't be a diagonal vector
+		for (const Vector2& vector : surroundingVectors)
+		{
+			// if the vector is smaller than the cached vector + It has to can't be a diagonal vector
 				if (smallestVector.MagnitudeSquared() > vector.MagnitudeSquared() && (vector.x == 0.f || vector.y ==0.f))
-					smallestVector = vector;
-			}
-			if (smallestVector.MagnitudeSquared() <= 0.1f)
-			{
-				smallestVector = Vector2{ m_pGridGraph->GetNodeWorldPos(destinationIdx) - centerPos };
-			}
-			returnVector = -smallestVector;
-			break;
+				smallestVector = vector;
 		}
+		if (smallestVector.MagnitudeSquared() <= 0.1f)
+		{
+			smallestVector = Vector2{ m_pGridGraph->GetNodeWorldPos(destinationIdx) - centerPos };
+		}
+		returnVector = -smallestVector;
+			break;
+	}
 
 		returnVector += 1/vector;
 	}
@@ -440,12 +436,12 @@ void App_ResearchTopic::DrawVectors() const
 
 void App_ResearchTopic::AddAgent(const Vector2& position)
 {
-	ImGui_Agent agent{};
-	agent.pAgent = new SteeringAgent();
-	agent.pAgent->SetAutoOrient(true);
-	agent.pAgent->SetMaxLinearSpeed(15);
-	agent.pAgent->SetMass(1);
-	agent.pAgent->SetPosition(position);
+	SteeringAgent* agent{};
+	agent = new SteeringAgent();
+	agent->SetAutoOrient(true);
+	agent->SetMaxLinearSpeed(15);
+	agent->SetMass(1);
+	agent->SetPosition(position);
 
 	m_AgentVec.push_back(agent);
 }
@@ -502,4 +498,14 @@ void App_ResearchTopic::CheckWallsUpdate()
 			AddWall(i);
 		}
 	}
+}
+
+void App_ResearchTopic::UpdateAgentAndVectors(SteeringAgent* agent, float dTime)
+{
+	const int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(agent->GetPosition()) };
+
+	if (m_VectorMap[nodeIdx].MagnitudeSquared() <= 0.2f)
+		m_VectorMap[nodeIdx] = CreateVector(nodeIdx);
+
+	agent->Update(dTime);
 }
