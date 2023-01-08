@@ -253,12 +253,12 @@ inline void b2Contact::SetEnabled(bool flag)
 
 inline bool b2Contact::IsEnabled() const
 {
-	return ((m_flags & e_enabledFlag) == e_enabledFlag);
+	return ((m_flags & e_enabledFlag) && e_enabledFlag);
 }
 
 inline bool b2Contact::IsTouching() const
 {
-	return ((m_flags & e_touchingFlag) == e_touchingFlag);
+	return ((m_flags & e_touchingFlag) && e_touchingFlag);
 }
 
 inline b2Contact* b2Contact::GetNext()

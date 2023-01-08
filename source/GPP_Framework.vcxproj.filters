@@ -39,7 +39,7 @@
     <ClCompile Include="projects\ResearchTopic\HeatmapManager.cpp" />
     <ClCompile Include="projects\ResearchTopic\VectorMapManager.cpp" />
     <ClCompile Include="projects\ResearchTopic\AgentManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\WorldManager.cpp" />
+    <ClCompile Include="projects\ResearchTopic\LevelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="projects\App_Selector.h" />
@@ -128,7 +128,8 @@
     <ClInclude Include="projects\ResearchTopic\HeatmapManager.h" />
     <ClInclude Include="projects\ResearchTopic\VectorMapManager.h" />
     <ClInclude Include="projects\ResearchTopic\AgentManager.h" />
-    <ClInclude Include="projects\ResearchTopic\WorldManager.h" />
+    <ClInclude Include="projects\ResearchTopic\LevelManager.h" />
+    <ClInclude Include="projects\ResearchTopic\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />

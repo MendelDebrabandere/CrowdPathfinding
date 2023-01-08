@@ -8,7 +8,7 @@
 
 #ifdef ActiveApp_ResearchTopic
 #include "projects/ResearchTopic/App_ResearchTopic.h"
-typedef App_ResearchTopic CurrentApp;
+typedef Elite::App_ResearchTopic CurrentApp;
 #endif
 
 

@@ -340,6 +340,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="projects\ResearchTopic\LevelManager.cpp" />
     <ClCompile Include="projects\ResearchTopic\AgentManager.cpp" />
     <ClCompile Include="projects\ResearchTopic\HeatmapManager.cpp" />
     <ClCompile Include="projects\ResearchTopic\App_ResearchTopic.cpp" />
@@ -387,9 +388,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Exam|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="projects\ResearchTopic\VectorMapManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\WorldManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="projects\ResearchTopic\LevelManager.h" />
     <ClInclude Include="projects\ResearchTopic\AgentManager.h" />
     <ClInclude Include="projects\ResearchTopic\HeatmapManager.h" />
     <ClInclude Include="projects\ResearchTopic\App_ResearchTopic.h" />
@@ -468,6 +469,7 @@
     <ClInclude Include="projects\Movement\SteeringBehaviors\SteeringAgent.h" />
     <ClInclude Include="projects\Movement\SteeringBehaviors\Steering\SteeringBehaviors.h" />
     <ClInclude Include="projects\Movement\SteeringBehaviors\SteeringHelpers.h" />
+    <ClInclude Include="projects\ResearchTopic\stb_image.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioAgent.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioContactListener.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioData.h" />
@@ -476,7 +478,6 @@
     <ClInclude Include="projects\Shared\NavigationColliderElement.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="projects\ResearchTopic\VectorMapManager.h" />
-    <ClInclude Include="projects\ResearchTopic\WorldManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />

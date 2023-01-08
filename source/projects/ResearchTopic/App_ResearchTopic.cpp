@@ -3,10 +3,19 @@
 
 //Includes
 #include "App_ResearchTopic.h"
-#include "projects/Movement/SteeringBehaviors/SteeringAgent.h"
+#include "HeatmapManager.h"
+#include "VectorMapManager.h"
+#include "AgentManager.h"
+#include "LevelManager.h"
+extern "C" {
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+}
 
 
 using namespace Elite;
+
+#define USE_MAP true;
 
 //Destructor
 App_ResearchTopic::~App_ResearchTopic()
@@ -15,15 +24,12 @@ App_ResearchTopic::~App_ResearchTopic()
 	SAFE_DELETE(m_pGraphRenderer);
 	SAFE_DELETE(m_pGraphEditor);
 
-	for (auto a : m_AgentVec)
-	{
-		SAFE_DELETE(a);
-	}
+	SAFE_DELETE(m_pHeatMap);
+	SAFE_DELETE(m_pVectorMap);
 
-	for (auto a : m_WallRBPtrs)
-	{
-		SAFE_DELETE(a);
-	}
+	SAFE_DELETE(m_pAgents);
+
+	SAFE_DELETE(m_pLevel);
 }
 
 //Functions
@@ -35,18 +41,18 @@ void App_ResearchTopic::Start()
 	DEBUGRENDERER2D->GetActiveCamera()->SetZoom(39.0f);
 	DEBUGRENDERER2D->GetActiveCamera()->SetCenter(Elite::Vector2(73.0f, 35.0f));
 
-	m_WallRBPtrs.resize(COLUMNS * ROWS);
+	//Create Graph and Level
+	MakeGridGraphAndLevel();
 
-	//Create Graph
-	MakeGridGraph();
-
-	m_HeatMap.resize(COLUMNS * ROWS);
+	m_pHeatMap = new HeatmapManager(COLUMNS * ROWS, m_pGridGraph);
+	m_pVectorMap = new VectorMapManager(COLUMNS * ROWS, m_pGridGraph);
+	m_pAgents = new AgentManager(m_pGridGraph);
 
 	//Setup default start path
 	destinationIdx = 88;
-	CheckWallsUpdate();
-	CalculateHeatMap();
-	ResetVectorMap();
+	m_pLevel->CheckUpdatedWalls();
+	m_pHeatMap->CalculateHeatMap(destinationIdx);
+	m_pVectorMap->ResetVectorMap();
 }
 
 void App_ResearchTopic::Update(float deltaTime)
@@ -61,26 +67,13 @@ void App_ResearchTopic::Update(float deltaTime)
 	//UPDATE/CHECK GRID HAS CHANGED
 	if (m_pGraphEditor->UpdateGraph(m_pGridGraph))
 	{
-		CheckWallsUpdate();
-		CalculateHeatMap();
-		ResetVectorMap();
+		m_pLevel->CheckUpdatedWalls();
+		m_pHeatMap->CalculateHeatMap(destinationIdx);
+		m_pVectorMap->ResetVectorMap();
 	}
 
 	//UPDATE AGENTS
-	for (SteeringAgent* a : m_AgentVec)
-	{
-		if (a)
-		{
-			const int idx{ m_pGridGraph->GetNodeIdxAtWorldPos(a->GetPosition()) };
-			if (idx != -1)
-				if (destinationIdx == idx)
-					a->SetLinearVelocity(m_pGridGraph->GetNodeWorldPos(destinationIdx) - a->GetPosition());
-				else
-					a->SetLinearVelocity(m_VectorMap[idx] * 15);
-
-			UpdateAgentAndVectors(a, deltaTime);
-		}
-	}
+	m_pAgents->UpdateAgentsAndCreateVectors(deltaTime, destinationIdx, m_SizeCell, m_pVectorMap, m_pHeatMap);
 
 }
 
@@ -88,29 +81,27 @@ void App_ResearchTopic::Render(float deltaTime) const
 {
 	UNREFERENCED_PARAMETER(deltaTime);
 	//Render grid
-	//m_pGraphRenderer->RenderGraph(m_pGridGraph, true, m_DebugSettings.showNumberHeatMap, false, false, m_HeatMap);
+	//WAY TOO LOW FPS
+	//m_pGraphRenderer->RenderGraph(m_pGridGraph, true, false, false, false, m_HeatMap);
 
 	//Render end node on top if applicable
 	if (destinationIdx != invalid_node_index)
 	{
-		//m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(destinationIdx) }, END_NODE_COLOR);
+		m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(destinationIdx) }, END_NODE_COLOR);
 	}
 
 	if (m_DebugSettings.showHeatMap == true)
 	{
 		int furthestIdx{-1};
-		for (int distance :m_HeatMap)
+		for (int distance : *m_pHeatMap->GetHeatMap())
 		{
 			if (distance > furthestIdx && distance != INT_MAX)
 				furthestIdx = distance;
 		}
-		for (int index{}; index < m_HeatMap.size(); ++index)
+		for (int index{}; index < m_pHeatMap->GetHeatMap()->size(); ++index)
 		{
-			if (m_HeatMap[index] != -1)
-			{}
-				//m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float(m_HeatMap[index]) / furthestIdx, 0, 0 });
-			//else
-				//m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 0,0,1});
+			if ((*m_pHeatMap->GetHeatMap())[index] != -1)
+				m_pGraphRenderer->HighlightNodes(m_pGridGraph, { m_pGridGraph->GetNode(index) }, Elite::Color{ 1 - float((*m_pHeatMap->GetHeatMap())[index]) / furthestIdx, 0, 0 });
 		}
 	}
 
@@ -119,43 +110,46 @@ void App_ResearchTopic::Render(float deltaTime) const
 		DrawVectors();
 	}
 
-	for (SteeringAgent* a : m_AgentVec)
-	{
-		if (a)
-		{
-			a->Render(deltaTime);
-		}
-	}
+	m_pAgents->RenderAgents(deltaTime);
 }
 
-void App_ResearchTopic::MakeGridGraph()
+void App_ResearchTopic::MakeGridGraphAndLevel()
 {
 	m_pGridGraph = new GridGraph<GridTerrainNode, GraphConnection>(COLUMNS, ROWS, m_SizeCell, false, false, 1.f, 1.5f);
 
-	//Setup default terrain
-	//HORIZONTAL
-	for (int i{}; i < COLUMNS; ++i)
+	m_pLevel = new LevelManager(COLUMNS * ROWS, m_SizeCell, m_pGridGraph);
+
+	if (true)
 	{
-		//BOTTOM
-		m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
-		m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
-		AddWall(i);
-		//TOP
-		m_pGridGraph->GetNode(COLUMNS * (ROWS-1) + i)->SetTerrainType(TerrainType::Water);
-		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * (ROWS - 1) + i);
-		AddWall(COLUMNS * (ROWS - 1) + i);
+		ParseMapData();
 	}
-	//VERTICAL
-	for (int i{}; i < ROWS; ++i)
+	else
 	{
-		//LEFT
-		m_pGridGraph->GetNode(COLUMNS * i)->SetTerrainType(TerrainType::Water);
-		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i);
-		AddWall(COLUMNS * i);
-		//RIGHT
-		m_pGridGraph->GetNode(COLUMNS * i + COLUMNS - 1)->SetTerrainType(TerrainType::Water);
-		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i + COLUMNS - 1);
-		AddWall(COLUMNS * i + COLUMNS - 1);
+		//Setup default terrain
+		//HORIZONTAL
+		for (int i{}; i < COLUMNS; ++i)
+		{
+			//BOTTOM
+			m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
+			m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
+			m_pLevel->AddWall(i);
+			//TOP
+			m_pGridGraph->GetNode(COLUMNS * (ROWS - 1) + i)->SetTerrainType(TerrainType::Water);
+			m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * (ROWS - 1) + i);
+			m_pLevel->AddWall(COLUMNS * (ROWS - 1) + i);
+		}
+		//VERTICAL
+		for (int i{}; i < ROWS; ++i)
+		{
+			//LEFT
+			m_pGridGraph->GetNode(COLUMNS * i)->SetTerrainType(TerrainType::Water);
+			m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i);
+			m_pLevel->AddWall(COLUMNS * i);
+			//RIGHT
+			m_pGridGraph->GetNode(COLUMNS * i + COLUMNS - 1)->SetTerrainType(TerrainType::Water);
+			m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i + COLUMNS - 1);
+			m_pLevel->AddWall(COLUMNS * i + COLUMNS - 1);
+		}
 	}
 }
 
@@ -196,8 +190,8 @@ void App_ResearchTopic::UpdateImGui()
 		ImGui::Spacing();
 		ImGui::Text("Stats");
 		ImGui::Indent();
-		ImGui::Text("Amount of Cells: %.1f ", float(m_VectorMap.size()));
-		ImGui::Text("Amount of Agents: %.1f ", float(m_AgentVec.size()));
+		ImGui::Text("Amount of Cells: %.1f ", float(COLUMNS * ROWS));
+		ImGui::Text("Amount of Agents: %.1f ", float(m_pAgents->GetAmountOfAgents()));
 		ImGui::Unindent();
 		ImGui::Spacing();
 
@@ -206,7 +200,6 @@ void App_ResearchTopic::UpdateImGui()
 		buttonText += "Destination Node";
 
 		ImGui::Checkbox("HeatMap", &m_DebugSettings.showHeatMap);
-		ImGui::Checkbox("NumberHeatMap", &m_DebugSettings.showNumberHeatMap);
 		ImGui::Checkbox("VectorMap", &m_DebugSettings.showVectorMap);
 		ImGui::Spacing();
 
@@ -218,232 +211,16 @@ void App_ResearchTopic::UpdateImGui()
 #endif
 }
 
-void App_ResearchTopic::CalculateHeatMap()
-{
-	m_HeatMap.clear();
-	m_HeatMap.resize(COLUMNS * ROWS);
-	std::fill(m_HeatMap.begin(), m_HeatMap.end(), -1);
-
-	std::vector<Elite::GridTerrainNode*> toDoList{};
-	std::vector< Elite::GridTerrainNode*> finishedList{};
-
-	toDoList.push_back(m_pGridGraph->GetNode(destinationIdx));
-
-	int distanceCounter{ 0 };
-
-	//For as long as there are nodes that have not been calculated
-	while (toDoList.empty() == false)
-	{
-		std::vector<Elite::GridTerrainNode*> newToDoList{};
-
-		//for every node in to do list
-		for (Elite::GridTerrainNode* node : toDoList)
-		{
-			//Set distance
-			m_HeatMap[node->GetIndex()] = distanceCounter;
-
-			//Check their connections to set up future caluclation
-			for (const Elite::GraphConnection* connection :m_pGridGraph->GetConnections(*node))
-			{
-				bool IsAddedAlready{ false };
-
-				// Setup node to check
-				int nodeToCheck{};
-				if (connection->GetTo() != node->GetIndex())
-					nodeToCheck = connection->GetTo();
-				else
-					nodeToCheck = connection->GetFrom();
-
-				//Check if it is in toDoList
-				for (const Elite::GridTerrainNode* todoNode : toDoList)
-				{
-					if (todoNode->GetIndex() == nodeToCheck)
-					{
-						IsAddedAlready = true;
-						break;
-					}
-				}
-				//Check if it is in newToDoList
-				for (const Elite::GridTerrainNode* newTodoNode : newToDoList)
-				{
-					if (newTodoNode->GetIndex() == nodeToCheck || IsAddedAlready)
-				{
-						IsAddedAlready = true;
-						break;
-					}
-				}
-				//Check if it is in finishedList
-				for (const Elite::GridTerrainNode* finishedNode : finishedList)
-				{
-					if (finishedNode->GetIndex() == nodeToCheck || IsAddedAlready)
-					{
-						IsAddedAlready = true;
-						break;
-					}
-				}
-				//if it is in neither, add it to newToDoList
-				if (IsAddedAlready == false)
-				{
-					newToDoList.push_back(m_pGridGraph->GetNode(nodeToCheck));
-				}
-			}
-			finishedList.push_back(node);
-		}
-
-		toDoList = newToDoList;
-		++distanceCounter;
-	}
-}
-
-void App_ResearchTopic::ResetVectorMap()
-{
-	m_VectorMap.clear();
-	m_VectorMap.resize(m_HeatMap.size());
-	std::fill(m_VectorMap.begin(), m_VectorMap.end(), Vector2{0,0});
-}
-
-Vector2 App_ResearchTopic::CreateVector(int idx) const
-{
-	if (m_HeatMap[idx] == -1)
-	{
-		return Vector2{};
-	}
-
-	std::vector<Vector2> surroundingVectors{};
-	surroundingVectors.reserve(8);
-
-	const float sqrt2{ 1 / sqrtf(2) };
-	Vector2 centerPos{ m_pGridGraph->GetNodeWorldPos(idx) };
-
-	bool isNextToWall{ false };
-
-	{	//Left node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{-float(m_SizeCell), 0}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ -float(m_HeatMap[nodeIdx]), 0 });
-		}
-		else
-			isNextToWall = true;
-		
-	}
-	{	//TopLeft node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{-float(m_SizeCell), float(m_SizeCell)}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{sqrt2 *  -float(m_HeatMap[nodeIdx]), sqrt2 * float(m_HeatMap[nodeIdx]) });
-		}
-		else
-			isNextToWall = true;
-	}
-	{	//Top node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{0, float(m_SizeCell)}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ 0, float(m_HeatMap[nodeIdx]) });
-		}
-		else
-			isNextToWall = true;
-	}
-	{	//TopRight node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{float(m_SizeCell), float(m_SizeCell)}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ sqrt2 * float(m_HeatMap[nodeIdx]),sqrt2 * float(m_HeatMap[nodeIdx]) });
-		}
-		else
-			isNextToWall = true;
-	}
-	{	//Right node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{float(m_SizeCell), 0}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ float(m_HeatMap[nodeIdx]), 0 });
-		}
-		else
-			isNextToWall = true;
-	}
-	{	//BottomRight node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{float(m_SizeCell), -float(m_SizeCell)}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ sqrt2 * float(m_HeatMap[nodeIdx]),sqrt2 * -float(m_HeatMap[nodeIdx]) });
-		}
-		else
-			isNextToWall = true;
-	}
-	{	//Bottom node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{0, -float(m_SizeCell)}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ 0, -float(m_HeatMap[nodeIdx]) });
-		}
-		else
-			isNextToWall = true;
-	}
-	{	//BottomLeft node
-		int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(centerPos + Vector2{-float(m_SizeCell), -float(m_SizeCell)}) };
-		if (nodeIdx != invalid_node_index && m_HeatMap[nodeIdx] != -1)
-		{
-			surroundingVectors.push_back(Vector2{ sqrt2 * -float(m_HeatMap[nodeIdx]),sqrt2 * -float(m_HeatMap[nodeIdx]) });
-		}
-		else
-			isNextToWall = true;
-	}
-
-
-	Vector2 returnVector{};
-	for (const Vector2& vector: surroundingVectors)
-	{
-	//If the square is next to a wall
-	if (isNextToWall)
-	{
-		// find the smallest vector
-			Vector2 smallestVector{10000, 0};
-		for (const Vector2& vector : surroundingVectors)
-		{
-			// if the vector is smaller than the cached vector + It has to can't be a diagonal vector
-				if (smallestVector.MagnitudeSquared() > vector.MagnitudeSquared() && (vector.x == 0.f || vector.y ==0.f))
-				smallestVector = vector;
-		}
-		if (smallestVector.MagnitudeSquared() <= 0.1f)
-		{
-			smallestVector = Vector2{ m_pGridGraph->GetNodeWorldPos(destinationIdx) - centerPos };
-		}
-		returnVector = -smallestVector;
-			break;
-	}
-
-		returnVector += 1/vector;
-	}
-
-	returnVector.Normalize();
-
-	return -returnVector;
-}
-
 void App_ResearchTopic::DrawVectors() const
 {
-	for (int idx{}; idx < m_VectorMap.size(); ++idx)
+	for (int idx{}; idx < m_pVectorMap->GetVectorMap()->size(); ++idx)
 	{
-		if (m_HeatMap[idx] != 0)
+		if (!((*m_pHeatMap->GetHeatMap())[idx] == 0 || (*m_pHeatMap->GetHeatMap())[idx] == -1))
 		{
 			Vector2 position{ m_pGridGraph->GetNodeWorldPos(idx) };
-			DEBUGRENDERER2D->DrawSegment(position, position + m_VectorMap[idx] * 5, Color{ 1.f,1.f,1.f }, 0.9f);
+			DEBUGRENDERER2D->DrawSegment(position, position + (*m_pVectorMap->GetVectorMap())[idx] * 5, Color{ 1.f,1.f,1.f }, 0.9f);
 		}
 	}
-}
-
-void App_ResearchTopic::AddAgent(const Vector2& position)
-{
-	SteeringAgent* agent{};
-	agent = new SteeringAgent();
-	agent->SetAutoOrient(true);
-	agent->SetMaxLinearSpeed(15);
-	agent->SetMass(1);
-	agent->SetPosition(position);
-
-	m_AgentVec.push_back(agent);
 }
 
 void App_ResearchTopic::HandleInput()
@@ -459,53 +236,54 @@ void App_ResearchTopic::HandleInput()
 		//Find closest node to click pos
 		const int closestNode = m_pGridGraph->GetNodeIdxAtWorldPos(mousePos);
 		destinationIdx = closestNode;
-		CalculateHeatMap();
+		m_pHeatMap->CalculateHeatMap(destinationIdx);
 	}
 	if (INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Up))
 	{
-		AddAgent(/*mousePos +*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
+		m_pAgents->AddAgent(/*mousePos +*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
 	}
 }
 
-void App_ResearchTopic::AddWall(int idx)
+void App_ResearchTopic::ParseMapData()
 {
-	if (!m_WallRBPtrs[idx])
+	//setup variables
+	const std::string filename = "resources/map.png";
+	int width, height;
+	std::vector<unsigned char> image;
+
+	//getting data out of png
+	int n;
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &n, 4);
+	if (data != nullptr)
 	{
-		//Create Rigidbody
-		const Elite::RigidBodyDefine define = Elite::RigidBodyDefine(0.01f, 0.1f, Elite::eStatic, false);
-		const Transform transform = Transform(m_pGridGraph->GetNodeWorldPos(idx), Elite::ZeroVector2);
-
-		m_WallRBPtrs[idx] = new RigidBody(define, transform);
-
-		//Add shape
-		Elite::EPhysicsBoxShape shape;
-		shape.width = m_SizeCell;
-		shape.height = m_SizeCell;
-		m_WallRBPtrs[idx]->AddShape(&shape);
+		image = std::vector<unsigned char>(data, data + width * height * 4);
 	}
-}
+	else
+		std::cout << "Failed to load image\n";
+	stbi_image_free(data);
 
-void App_ResearchTopic::CheckWallsUpdate()
-{
-	for (int i{}; i < m_WallRBPtrs.size(); ++i)
+	std::cout << "Image width = " << width << '\n';
+	std::cout << "Image height = " << height << '\n';
+
+	const size_t RGBA = 4;
+
+	int amountOfWallsPlaced{};
+	for (int i{}; i < COLUMNS * ROWS; ++i)
 	{
-		if (m_WallRBPtrs[i] && m_pGridGraph->GetNode(i)->GetTerrainType() != TerrainType::Water)
+		const int y = i / COLUMNS;
+		const int x = i % COLUMNS;
+		const size_t index = RGBA * ((height - 1 - y) * width + x);
+		if (image[index + 0] == 0) // + 0 means R channel of pixel, + 1 means blue...
 		{
-			SAFE_DELETE(m_WallRBPtrs[i]);
-		}
-		else if (!m_WallRBPtrs[i] && m_pGridGraph->GetNode(i)->GetTerrainType() == TerrainType::Water)
-		{
-			AddWall(i);
+			m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
+			m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
+			m_pLevel->AddWall(i);
+			++amountOfWallsPlaced;
+			if (amountOfWallsPlaced % 100 == 0)
+			{
+				std::cout << "Placed " << amountOfWallsPlaced << " walls, more loading.\n";
+			}
 		}
 	}
-}
-
-void App_ResearchTopic::UpdateAgentAndVectors(SteeringAgent* agent, float dTime)
-{
-	const int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(agent->GetPosition()) };
-
-	if (m_VectorMap[nodeIdx].MagnitudeSquared() <= 0.2f)
-		m_VectorMap[nodeIdx] = CreateVector(nodeIdx);
-
-	agent->Update(dTime);
+	std::cout << "Finished placing Walls! Total of " << amountOfWallsPlaced << " walls placed.\n";
 }

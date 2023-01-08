@@ -99,11 +99,11 @@ struct b2Manifold
 		e_faceB
 	};
 
-	b2ManifoldPoint points[b2_maxManifoldPoints];	///< the points of contact
-	b2Vec2 localNormal;								///< not use for Type::e_points
-	b2Vec2 localPoint;								///< usage depends on manifold type
-	Type type;
-	int32 pointCount;								///< the number of manifold points
+	b2ManifoldPoint points[b2_maxManifoldPoints]{};	///< the points of contact
+	b2Vec2 localNormal{};								///< not use for Type::e_points
+	b2Vec2 localPoint{};								///< usage depends on manifold type
+	Type type{};
+	int32 pointCount{};								///< the number of manifold points
 };
 
 /// This is used to compute the current state of a contact manifold.
