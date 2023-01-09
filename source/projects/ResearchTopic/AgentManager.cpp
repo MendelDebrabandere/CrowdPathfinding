@@ -13,7 +13,7 @@ Elite::AgentManager::AgentManager(GridGraph<GridTerrainNode, GraphConnection>* g
 
 Elite::AgentManager::~AgentManager()
 {
-	for (auto a: m_Agents)
+	for (auto a : m_Agents)
 	{
 		SAFE_DELETE(a);
 	}
@@ -41,7 +41,7 @@ void AgentManager::UpdateAgentsAndCreateVectors(float dTime, int destinationIdx,
 			if (destinationIdx == idx)
 				a->SetLinearVelocity(m_pGridGraph->GetNodeWorldPos(destinationIdx) - a->GetPosition());
 			else
-				a->SetLinearVelocity((*pVectorManager->GetVectorMap())[idx] * 15);
+				a->SetLinearVelocity((*pVectorManager->GetVectorMap())[idx] * 100);
 
 		
 		const int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(a->GetPosition()) };
@@ -56,11 +56,30 @@ void AgentManager::UpdateAgentsAndCreateVectors(float dTime, int destinationIdx,
 void AgentManager::AddAgent(const Vector2& position)
 {
 	SteeringAgent* agent{};
-	agent = new SteeringAgent();
+	agent = new SteeringAgent(4);
 	agent->SetAutoOrient(true);
-	agent->SetMaxLinearSpeed(15);
-	agent->SetMass(1);
+	agent->SetMaxLinearSpeed(50);
+	agent->SetMass(10000);
+	
 	agent->SetPosition(position);
 
 	m_Agents.push_back(agent);
 }
+
+void AgentManager::Add30Agents(const Vector2& position)
+{
+	for (int i{}; i < 30; ++i)
+	{
+		AddAgent(position + Vector2{float(i), float(i)});
+	}
+}
+
+void AgentManager::ClearAllAgents()
+{
+	for (auto a : m_Agents)
+	{
+		SAFE_DELETE(a);
+	}
+	m_Agents.clear();
+}
+

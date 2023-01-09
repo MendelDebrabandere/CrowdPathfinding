@@ -26,7 +26,8 @@ namespace Elite
 
 		void UpdateAgentsAndCreateVectors(float dTime, int destinationIdx, int sizeCell, VectorMapManager* pVectorManager, const HeatmapManager* pHeatmapManager);
 		void AddAgent(const Vector2& position);
-
+		void Add30Agents(const Vector2& position);
+		void ClearAllAgents();
 
 	private:
 		std::vector<SteeringAgent*> m_Agents{};

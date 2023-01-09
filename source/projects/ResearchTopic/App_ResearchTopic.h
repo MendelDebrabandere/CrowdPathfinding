@@ -39,7 +39,6 @@ namespace Elite
 		struct DebugSettings
 		{
 			bool showHeatMap = false;
-			bool showNumberHeatMap = false;
 			bool showVectorMap = false;
 		};
 
@@ -48,8 +47,8 @@ namespace Elite
 		Vector2 m_TargetPosition = ZeroVector2;
 
 		//Grid datamembers
-		static constexpr int COLUMNS = 100;
-		static constexpr int ROWS = 100;
+		int COLUMNS;
+		int ROWS;
 		unsigned int m_SizeCell = 15;
 		GridGraph<GridTerrainNode, GraphConnection>* m_pGridGraph;
 
@@ -77,6 +76,7 @@ namespace Elite
 		void DrawVectors() const;
 		void HandleInput();
 		void ParseMapData();
+		void MakeSmallTestMap();
 	};
 }
 

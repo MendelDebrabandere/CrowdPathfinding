@@ -7,15 +7,15 @@
 #include "VectorMapManager.h"
 #include "AgentManager.h"
 #include "LevelManager.h"
-extern "C" {
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-}
+//extern "C" {
+//	#define STB_IMAGE_IMPLEMENTATION
+//	#include "stb_image.h"
+//}
 
 
 using namespace Elite;
 
-#define USE_MAP true;
+constexpr bool USE_MAP = true;
 
 //Destructor
 App_ResearchTopic::~App_ResearchTopic()
@@ -115,41 +115,25 @@ void App_ResearchTopic::Render(float deltaTime) const
 
 void App_ResearchTopic::MakeGridGraphAndLevel()
 {
+	if (USE_MAP) 
+	{
+		COLUMNS = 100; ROWS = 100;
+	}
+	else
+	{
+		COLUMNS = 15; ROWS = 15;
+	}
 	m_pGridGraph = new GridGraph<GridTerrainNode, GraphConnection>(COLUMNS, ROWS, m_SizeCell, false, false, 1.f, 1.5f);
 
 	m_pLevel = new LevelManager(COLUMNS * ROWS, m_SizeCell, m_pGridGraph);
 
-	if (true)
+	if (USE_MAP)
 	{
 		ParseMapData();
 	}
 	else
 	{
-		//Setup default terrain
-		//HORIZONTAL
-		for (int i{}; i < COLUMNS; ++i)
-		{
-			//BOTTOM
-			m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
-			m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
-			m_pLevel->AddWall(i);
-			//TOP
-			m_pGridGraph->GetNode(COLUMNS * (ROWS - 1) + i)->SetTerrainType(TerrainType::Water);
-			m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * (ROWS - 1) + i);
-			m_pLevel->AddWall(COLUMNS * (ROWS - 1) + i);
-		}
-		//VERTICAL
-		for (int i{}; i < ROWS; ++i)
-		{
-			//LEFT
-			m_pGridGraph->GetNode(COLUMNS * i)->SetTerrainType(TerrainType::Water);
-			m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i);
-			m_pLevel->AddWall(COLUMNS * i);
-			//RIGHT
-			m_pGridGraph->GetNode(COLUMNS * i + COLUMNS - 1)->SetTerrainType(TerrainType::Water);
-			m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i + COLUMNS - 1);
-			m_pLevel->AddWall(COLUMNS * i + COLUMNS - 1);
-		}
+		MakeSmallTestMap();
 	}
 }
 
@@ -227,6 +211,9 @@ void App_ResearchTopic::HandleInput()
 {
 	//INPUT
 	bool const middleMousePressed = INPUTMANAGER->IsMouseButtonUp(InputMouseButton::eMiddle);
+	bool const upPressed = INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Up);
+	bool const rightPressed = INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Right);
+	bool const downPressed = INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Down);
 
 	const MouseData mouseData = { INPUTMANAGER->GetMouseData(Elite::InputType::eMouseButton, Elite::InputMouseButton::eMiddle) };
 	const Vector2 mousePos = { DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld({ (float)mouseData.X, (float)mouseData.Y }) };
@@ -237,53 +224,92 @@ void App_ResearchTopic::HandleInput()
 		const int closestNode = m_pGridGraph->GetNodeIdxAtWorldPos(mousePos);
 		destinationIdx = closestNode;
 		m_pHeatMap->CalculateHeatMap(destinationIdx);
+		m_pVectorMap->ResetVectorMap();
 	}
-	if (INPUTMANAGER->IsKeyboardKeyUp(InputScancode::eScancode_Up))
+	if (upPressed)
 	{
-		m_pAgents->AddAgent(/*mousePos +*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
+		m_pAgents->AddAgent(/*mousePos*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
 	}
+	if (rightPressed)
+	{
+		m_pAgents->Add30Agents(/*mousePos*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901 / 2.f, 451 / 2.f }));
+	}
+	if (downPressed)
+	{
+		m_pAgents->ClearAllAgents();
+	}
+
 }
 
 void App_ResearchTopic::ParseMapData()
 {
-	//setup variables
-	const std::string filename = "resources/map.png";
-	int width, height;
-	std::vector<unsigned char> image;
+	////setup variables
+	//const std::string filename = "resources/map.png";
+	//int width, height;
+	//std::vector<unsigned char> image;
 
-	//getting data out of png
-	int n;
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &n, 4);
-	if (data != nullptr)
+	////getting data out of png
+	//int n;
+	//unsigned char* data = stbi_load(filename.c_str(), &width, &height, &n, 4);
+	//if (data != nullptr)
+	//{
+	//	image = std::vector<unsigned char>(data, data + width * height * 4);
+	//}
+	//else
+	//	std::cout << "Failed to load image\n";
+	//stbi_image_free(data);
+
+	//std::cout << "Image width = " << width << '\n';
+	//std::cout << "Image height = " << height << '\n';
+	//
+	//const size_t RGBA = 4;
+
+	//int amountOfWallsPlaced{};
+	//for (int i{}; i < COLUMNS * ROWS; ++i)
+	//{
+	//	const int y = i / COLUMNS;
+	//	const int x = i % COLUMNS;
+	//	const size_t index = RGBA * ((height - 1 - y) * width + x);
+	//	if (image[index + 0] == 0) // + 0 means R channel of pixel, + 1 means blue...
+	//	{
+	//		m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
+	//		m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
+	//		m_pLevel->AddWall(i);
+	//		++amountOfWallsPlaced;
+	//		if (amountOfWallsPlaced % 100 == 0)
+	//		{
+	//			std::cout << "Placed " << amountOfWallsPlaced << " walls, more loading.\n";
+	//		}
+	//	}
+	//}
+	//std::cout << "Finished placing Walls!\nTotal of " << amountOfWallsPlaced << " walls placed.\n";
+}
+
+void Elite::App_ResearchTopic::MakeSmallTestMap()
+{
+	//Setup default terrain
+	//HORIZONTAL
+	for (int i{}; i < COLUMNS; ++i)
 	{
-		image = std::vector<unsigned char>(data, data + width * height * 4);
+		//BOTTOM
+		m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
+		m_pLevel->AddWall(i);
+		//TOP
+		m_pGridGraph->GetNode(COLUMNS * (ROWS - 1) + i)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * (ROWS - 1) + i);
+		m_pLevel->AddWall(COLUMNS * (ROWS - 1) + i);
 	}
-	else
-		std::cout << "Failed to load image\n";
-	stbi_image_free(data);
-
-	std::cout << "Image width = " << width << '\n';
-	std::cout << "Image height = " << height << '\n';
-
-	const size_t RGBA = 4;
-
-	int amountOfWallsPlaced{};
-	for (int i{}; i < COLUMNS * ROWS; ++i)
+	//VERTICAL
+	for (int i{}; i < ROWS; ++i)
 	{
-		const int y = i / COLUMNS;
-		const int x = i % COLUMNS;
-		const size_t index = RGBA * ((height - 1 - y) * width + x);
-		if (image[index + 0] == 0) // + 0 means R channel of pixel, + 1 means blue...
-		{
-			m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
-			m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
-			m_pLevel->AddWall(i);
-			++amountOfWallsPlaced;
-			if (amountOfWallsPlaced % 100 == 0)
-			{
-				std::cout << "Placed " << amountOfWallsPlaced << " walls, more loading.\n";
-			}
-		}
+		//LEFT
+		m_pGridGraph->GetNode(COLUMNS * i)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i);
+		m_pLevel->AddWall(COLUMNS * i);
+		//RIGHT
+		m_pGridGraph->GetNode(COLUMNS * i + COLUMNS - 1)->SetTerrainType(TerrainType::Water);
+		m_pGridGraph->RemoveConnectionsToAdjacentNodes(COLUMNS * i + COLUMNS - 1);
+		m_pLevel->AddWall(COLUMNS * i + COLUMNS - 1);
 	}
-	std::cout << "Finished placing Walls! Total of " << amountOfWallsPlaced << " walls placed.\n";
 }
