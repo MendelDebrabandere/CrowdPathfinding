@@ -17,8 +17,8 @@ Sector::Sector(const Elite::Vector2& center, std::vector<uint8>* costField)
 	{
 		if ((*costField)[i] == 255)
 		{																			
-			const Transform transform = Transform(m_Center + Vector2{ -(s_Cells/2.f - s_CellSize/2) + i % s_Cells,
-																	(s_Cells / 2.f - s_CellSize / 2) + i / s_Cells }, ZeroVector2);
+			const Transform transform = Transform(m_Center + Vector2{ -(s_Cells/2.f - s_CellSize/2.f) + i % s_Cells,
+																	  -(s_Cells/2.f - s_CellSize/2.f) + i / s_Cells }, ZeroVector2);
 			m_RBptrs[i] = new RigidBody(define, transform);
 			//Add shape
 			EPhysicsBoxShape shape;
