@@ -61,7 +61,7 @@ void App_CrowdPathfinding::Render(float deltaTime) const
 
 	for (const Sector* sector: m_SectorPtrs)
 	{
-		sector->Draw(m_DebugSettings.showSectorBorders, m_DebugSettings.showSectorCells);
+		sector->Draw(m_DebugSettings.showSectorBorders, m_DebugSettings.showSectorCells, m_DebugSettings.showPortals);
 	}
 
 }
@@ -114,6 +114,7 @@ void App_CrowdPathfinding::UpdateImGui()
 
 		ImGui::Checkbox("showSectorBorders", &m_DebugSettings.showSectorBorders);
 		ImGui::Checkbox("showSectorCells", &m_DebugSettings.showSectorCells);
+		ImGui::Checkbox("showPortals", &m_DebugSettings.showPortals);
 		ImGui::Spacing();
 
 		//End
@@ -219,5 +220,8 @@ std::vector<uint8>* App_CrowdPathfinding::ParseMapDataForSectors(int idx)
 
 void App_CrowdPathfinding::MakePortals()
 {
-
+	for (Sector* pSector : m_SectorPtrs)
+	{
+		pSector->MakePortals(m_SectorPtrs);
+	}
 }

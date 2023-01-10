@@ -4,7 +4,6 @@
 #include "framework/EliteInterfaces/EIApp.h"
 
 class Sector;
-class Portal;
 
 class App_CrowdPathfinding: public IApp
 {
@@ -31,12 +30,12 @@ private:
 	{
 		bool showSectorBorders = false;
 		bool showSectorCells = false;
+		bool showPortals = false;
 	};
 	DebugSettings m_DebugSettings{};
 
 
 	std::vector<Sector*> m_SectorPtrs;
-	std::vector<Portal*> m_PortalsPtrs;
 	Elite::Vector2 m_Destination{};
 
 	

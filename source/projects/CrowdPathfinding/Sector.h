@@ -5,7 +5,7 @@
 
 #include <bitset>
 
-//class Portal;
+class Portal;
 
 class Sector final
 {
@@ -22,8 +22,12 @@ public:
 	Sector& operator=(Sector&& other) = delete;
 
 
-	void Draw(bool drawEdged, const bool drawCells) const;
+	void Draw(bool drawEdged, bool drawCells, bool showPortals) const;
+	void MakePortals(const std::vector<Sector*>& sectorPtrs);
+	bool IsWall(int idx) const;
+	Elite::Vector2 GetCenter() const;
 
+	void Make1Portal(int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos);
 private:
 	static constexpr uint8 s_Cells{10};
 	static constexpr uint8 s_CellSize{1};
@@ -37,10 +41,14 @@ private:
 	//2 Bytes per item, uint8_t = key for direction lookupTable, bitset[0] = pathable flag, bitset[1] = LOS flag
 	std::vector<std::pair< uint8, std::bitset<2>>>* m_FlowField{};
 
+	std::vector<Portal*> m_PortalsPtrs;
+
 	std::vector<RigidBody*> m_RBptrs{};
 
 	//std::vector<Portal> m_Portals;
-	
+
+	void TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos, const std::vector<Sector*>& sectorPtrs);
+
 };
 
 #endif
