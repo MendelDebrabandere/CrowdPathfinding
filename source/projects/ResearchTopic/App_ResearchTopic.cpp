@@ -7,10 +7,10 @@
 #include "VectorMapManager.h"
 #include "AgentManager.h"
 #include "LevelManager.h"
-//extern "C" {
-//	#define STB_IMAGE_IMPLEMENTATION
-//	#include "stb_image.h"
-//}
+extern "C" {
+	#define STB_IMAGE_IMPLEMENTATION
+	#include "stb_image.h"
+}
 
 
 using namespace Elite;
@@ -243,46 +243,46 @@ void App_ResearchTopic::HandleInput()
 
 void App_ResearchTopic::ParseMapData()
 {
-	////setup variables
-	//const std::string filename = "resources/map.png";
-	//int width, height;
-	//std::vector<unsigned char> image;
+	//setup variables
+	const std::string filename = "resources/map.png";
+	int width, height;
+	std::vector<unsigned char> image;
 
-	////getting data out of png
-	//int n;
-	//unsigned char* data = stbi_load(filename.c_str(), &width, &height, &n, 4);
-	//if (data != nullptr)
-	//{
-	//	image = std::vector<unsigned char>(data, data + width * height * 4);
-	//}
-	//else
-	//	std::cout << "Failed to load image\n";
-	//stbi_image_free(data);
+	//getting data out of png
+	int n;
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &n, 4);
+	if (data != nullptr)
+	{
+		image = std::vector<unsigned char>(data, data + width * height * 4);
+	}
+	else
+		std::cout << "Failed to load image\n";
+	stbi_image_free(data);
 
-	//std::cout << "Image width = " << width << '\n';
-	//std::cout << "Image height = " << height << '\n';
-	//
-	//const size_t RGBA = 4;
+	std::cout << "Image width = " << width << '\n';
+	std::cout << "Image height = " << height << '\n';
+	
+	const size_t RGBA = 4;
 
-	//int amountOfWallsPlaced{};
-	//for (int i{}; i < COLUMNS * ROWS; ++i)
-	//{
-	//	const int y = i / COLUMNS;
-	//	const int x = i % COLUMNS;
-	//	const size_t index = RGBA * ((height - 1 - y) * width + x);
-	//	if (image[index + 0] == 0) // + 0 means R channel of pixel, + 1 means blue...
-	//	{
-	//		m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
-	//		m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
-	//		m_pLevel->AddWall(i);
-	//		++amountOfWallsPlaced;
-	//		if (amountOfWallsPlaced % 100 == 0)
-	//		{
-	//			std::cout << "Placed " << amountOfWallsPlaced << " walls, more loading.\n";
-	//		}
-	//	}
-	//}
-	//std::cout << "Finished placing Walls!\nTotal of " << amountOfWallsPlaced << " walls placed.\n";
+	int amountOfWallsPlaced{};
+	for (int i{}; i < COLUMNS * ROWS; ++i)
+	{
+		const int y = i / COLUMNS;
+		const int x = i % COLUMNS;
+		const size_t index = RGBA * ((height - 1 - y) * width + x);
+		if (image[index + 0] == 0) // + 0 means R channel of pixel, + 1 means blue...
+		{
+			m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
+			m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);
+			m_pLevel->AddWall(i);
+			++amountOfWallsPlaced;
+			if (amountOfWallsPlaced % 100 == 0)
+			{
+				std::cout << "Placed " << amountOfWallsPlaced << " walls, more loading.\n";
+			}
+		}
+	}
+	std::cout << "Finished placing Walls!\nTotal of " << amountOfWallsPlaced << " walls placed.\n";
 }
 
 void Elite::App_ResearchTopic::MakeSmallTestMap()

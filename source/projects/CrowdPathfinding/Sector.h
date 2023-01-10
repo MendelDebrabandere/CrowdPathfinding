@@ -26,8 +26,11 @@ public:
 	void MakePortals(const std::vector<Sector*>& sectorPtrs);
 	bool IsWall(int idx) const;
 	Elite::Vector2 GetCenter() const;
+	const std::vector<Portal*>* GetPortals() const;
 
-	void Make1Portal(int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos);
+	void GenerateFlowField();
+
+	void Make1Portal(int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos);
 private:
 	static constexpr uint8 s_Cells{10};
 	static constexpr uint8 s_CellSize{1};
@@ -38,14 +41,15 @@ private:
 	std::vector<uint8>* m_CostField{};
 	//4 Bytes per item, float = total integrated cost, bitset[0] = active wavefront flag, bitset[1] = LOS flag
 	std::vector<std::pair<float, std::bitset<2>>>* m_IntegrationField{};
-	//2 Bytes per item, uint8_t = key for direction lookupTable, bitset[0] = pathable flag, bitset[1] = LOS flag
-	std::vector<std::pair< uint8, std::bitset<2>>>* m_FlowField{};
+	//1 Byte per item, uint8_t = key for direction lookupTable
+	std::vector<uint8>* m_FlowField{};
+
+	bool m_HasFlowFieldGenerated{false};
 
 	std::vector<Portal*> m_PortalsPtrs;
 
 	std::vector<RigidBody*> m_RBptrs{};
 
-	//std::vector<Portal> m_Portals;
 
 	void TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos, const std::vector<Sector*>& sectorPtrs);
 

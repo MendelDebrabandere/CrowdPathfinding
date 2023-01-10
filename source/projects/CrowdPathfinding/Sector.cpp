@@ -109,7 +109,7 @@ void Sector::MakePortals(const std::vector<Sector*>& sectorPtrs)
 			for (size_t idx{ m_CostField->size() - s_Cells }; idx < m_CostField->size(); ++idx)
 			{
 				//Check if there is a wall at the idx
-				if ((*m_CostField)[idx] != 255)
+				if ((*m_CostField)[idx] <= 200)
 				{
 					//Check if there is a wall on the other side
 					if (sectorPtrs[myIdx + 10]->IsWall(idx - 90) == false)
@@ -143,7 +143,7 @@ void Sector::MakePortals(const std::vector<Sector*>& sectorPtrs)
 			for (size_t idx{ 9 }; idx < 100; idx += 10)
 			{
 				//Check if there is a wall at the idx
-				if ((*m_CostField)[idx] != 255)
+				if ((*m_CostField)[idx] <= 200)
 				{
 					//Check if there is a wall on the other side
 					if (sectorPtrs[myIdx + 1]->IsWall(idx - 9) == false)
@@ -169,7 +169,7 @@ void Sector::MakePortals(const std::vector<Sector*>& sectorPtrs)
 
 bool Sector::IsWall(int idx) const
 {
-	return  ((*m_CostField)[idx] == 255);
+	return  ((*m_CostField)[idx] >= 200);
 }
 
 Vector2 Sector::GetCenter() const
@@ -177,9 +177,24 @@ Vector2 Sector::GetCenter() const
 	return m_Center;
 }
 
-void Sector::Make1Portal(int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos)
+const std::vector<Portal*>* Sector::GetPortals() const
 {
-	m_PortalsPtrs.push_back(new Portal(startPortalPos, endPortalPos, otherSectorIdx));
+	return &m_PortalsPtrs;
+}
+
+void Sector::GenerateFlowField()
+{
+	// dont need to calculate if it has the data already
+	if (m_HasFlowFieldGenerated)
+		return;
+
+	//calculations
+
+}
+
+void Sector::Make1Portal(int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos)
+{
+	m_PortalsPtrs.push_back(new Portal(startPortalPos, endPortalPos, myIdx, otherSectorIdx));
 }
 
 void Sector::TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx,const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos, const std::vector<Sector*>& sectorPtrs)
@@ -187,8 +202,9 @@ void Sector::TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx
 	if (IsMakingPortal == false)
 		return;
 
-	Make1Portal(otherSectorIdx, startPortalPos, endPortalPos);
-	sectorPtrs[otherSectorIdx]->Make1Portal(myIdx, startPortalPos, endPortalPos);
+
+	Make1Portal(myIdx, otherSectorIdx, startPortalPos, endPortalPos);
+	sectorPtrs[otherSectorIdx]->Make1Portal(otherSectorIdx, myIdx, startPortalPos, endPortalPos);
 
 	IsMakingPortal = false;
 }

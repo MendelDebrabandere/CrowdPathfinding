@@ -340,12 +340,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="projects\CrowdPathfinding\Portal.cpp" />
-    <ClCompile Include="projects\CrowdPathfinding\App_CrowdPathfinding.h.cpp" />
-    <ClCompile Include="projects\ResearchTopic\LevelManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\AgentManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\HeatmapManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\App_ResearchTopic.cpp" />
     <ClCompile Include="framework\EliteAI\EliteDecisionMaking\EliteBehaviorTree\EBehaviorTree.cpp" />
     <ClCompile Include="framework\EliteAI\EliteDecisionMaking\EliteFiniteStateMachine\EFiniteStateMachine.cpp" />
     <ClCompile Include="framework\EliteAI\EliteGraphs\EGraphConnectionTypes.cpp" />
@@ -366,6 +360,10 @@
     <ClCompile Include="framework\EliteWindow\SDLWindow\SDLWindow.cpp" />
     <ClCompile Include="framework\EliteRendering\SDLIntegration\SDLHelpers\gl3w.c" />
     <ClCompile Include="framework\main.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\AgentManager.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\App_CrowdPathfinding.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\Portal.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\Sector.cpp" />
     <ClCompile Include="projects\Movement\Sandbox\SandboxAgent.cpp" />
     <ClCompile Include="projects\Movement\SteeringBehaviors\CombinedSteering\CombinedSteeringBehaviors.cpp" />
     <ClCompile Include="projects\Movement\SteeringBehaviors\Flocking\Flock.cpp" />
@@ -379,7 +377,6 @@
     <ClCompile Include="projects\Shared\Agario\AgarioFood.cpp" />
     <ClCompile Include="projects\Shared\BaseAgent.cpp" />
     <ClCompile Include="projects\Shared\NavigationColliderElement.cpp" />
-    <ClCompile Include="projects\CrowdPathfinding\Sector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -390,16 +387,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Exam|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Exam|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="projects\ResearchTopic\VectorMapManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="projects\CrowdPathfinding\Portal.h" />
-    <ClInclude Include="projects\CrowdPathfinding\App_CrowdPathfinding.h" />
-    <ClInclude Include="projects\CrowdPathfinding\stb_image.h" />
-    <ClInclude Include="projects\ResearchTopic\LevelManager.h" />
-    <ClInclude Include="projects\ResearchTopic\AgentManager.h" />
-    <ClInclude Include="projects\ResearchTopic\HeatmapManager.h" />
-    <ClInclude Include="projects\ResearchTopic\App_ResearchTopic.h" />
     <ClInclude Include="framework\EliteAI\EliteData\EBlackboard.h" />
     <ClInclude Include="framework\EliteAI\EliteDecisionMaking\EDecisionMaking.h" />
     <ClInclude Include="framework\EliteAI\EliteDecisionMaking\EliteBehaviorTree\EBehaviorTree.h" />
@@ -465,6 +454,11 @@
     <ClInclude Include="framework\EliteRendering\SDLIntegration\SDLHelpers\gl3w.h" />
     <ClInclude Include="framework\EliteRendering\SDLIntegration\SDLHelpers\glcorearb.h" />
     <ClInclude Include="framework\EliteInterfaces\EIApp.h" />
+    <ClInclude Include="projects\CrowdPathfinding\AgentManager.h" />
+    <ClInclude Include="projects\CrowdPathfinding\App_CrowdPathfinding.h" />
+    <ClInclude Include="projects\CrowdPathfinding\Portal.h" />
+    <ClInclude Include="projects\CrowdPathfinding\Sector.h" />
+    <ClInclude Include="projects\CrowdPathfinding\stb_image.h" />
     <ClInclude Include="projects\Movement\Sandbox\SandboxAgent.h" />
     <ClInclude Include="projects\App_Selector.h" />
     <ClInclude Include="projects\Movement\SteeringBehaviors\CombinedSteering\CombinedSteeringBehaviors.h" />
@@ -475,16 +469,13 @@
     <ClInclude Include="projects\Movement\SteeringBehaviors\SteeringAgent.h" />
     <ClInclude Include="projects\Movement\SteeringBehaviors\Steering\SteeringBehaviors.h" />
     <ClInclude Include="projects\Movement\SteeringBehaviors\SteeringHelpers.h" />
-    <ClInclude Include="projects\ResearchTopic\stb_image.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioAgent.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioContactListener.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioData.h" />
     <ClInclude Include="projects\Shared\Agario\AgarioFood.h" />
     <ClInclude Include="projects\Shared\BaseAgent.h" />
     <ClInclude Include="projects\Shared\NavigationColliderElement.h" />
-    <ClInclude Include="projects\CrowdPathfinding\Sector.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="projects\ResearchTopic\VectorMapManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />

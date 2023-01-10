@@ -35,14 +35,10 @@
     <ClCompile Include="projects\Shared\Agario\AgarioContactListener.cpp" />
     <ClCompile Include="projects\Shared\Agario\AgarioFood.cpp" />
     <ClCompile Include="framework\EliteAI\EliteDecisionMaking\EliteBehaviorTree\EBehaviorTree.cpp" />
-    <ClCompile Include="projects\ResearchTopic\App_ResearchTopic.cpp" />
-    <ClCompile Include="projects\ResearchTopic\HeatmapManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\VectorMapManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\AgentManager.cpp" />
-    <ClCompile Include="projects\ResearchTopic\LevelManager.cpp" />
-    <ClCompile Include="projects\CrowdPathfinding\App_CrowdPathfinding.h.cpp" />
-    <ClCompile Include="projects\CrowdPathfinding\Sector.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\AgentManager.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\App_CrowdPathfinding.cpp" />
     <ClCompile Include="projects\CrowdPathfinding\Portal.cpp" />
+    <ClCompile Include="projects\CrowdPathfinding\Sector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="projects\App_Selector.h" />
@@ -127,16 +123,11 @@
     <ClInclude Include="projects\Shared\Agario\AgarioFood.h" />
     <ClInclude Include="framework\EliteAI\EliteDecisionMaking\EliteBehaviorTree\EBehaviorTree.h" />
     <ClInclude Include="framework\EliteAI\EliteGraphs\EInfluenceMap.h" />
-    <ClInclude Include="projects\ResearchTopic\App_ResearchTopic.h" />
-    <ClInclude Include="projects\ResearchTopic\HeatmapManager.h" />
-    <ClInclude Include="projects\ResearchTopic\VectorMapManager.h" />
-    <ClInclude Include="projects\ResearchTopic\AgentManager.h" />
-    <ClInclude Include="projects\ResearchTopic\LevelManager.h" />
-    <ClInclude Include="projects\ResearchTopic\stb_image.h" />
-    <ClInclude Include="projects\CrowdPathfinding\App_CrowdPathfinding.h" />
-    <ClInclude Include="projects\CrowdPathfinding\Sector.h" />
     <ClInclude Include="projects\CrowdPathfinding\stb_image.h" />
+    <ClInclude Include="projects\CrowdPathfinding\AgentManager.h" />
+    <ClInclude Include="projects\CrowdPathfinding\App_CrowdPathfinding.h" />
     <ClInclude Include="projects\CrowdPathfinding\Portal.h" />
+    <ClInclude Include="projects\CrowdPathfinding\Sector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />
