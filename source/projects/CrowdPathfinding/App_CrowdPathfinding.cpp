@@ -42,7 +42,12 @@ void App_CrowdPathfinding::Start()
 	MakeLevel();
 
 	//Setup default start path
-	m_Destination = Vector2{ 45,55 };
+	m_Destination = Vector2{ 45.5f,55.5f };
+
+	for (Sector* pSector : m_SectorPtrs)
+	{
+		pSector->SetFlowFieldPoint(m_Destination, 0);
+	}
 
 	m_pAgentManager = new AgentManager();
 }
@@ -72,7 +77,7 @@ void App_CrowdPathfinding::Render(float deltaTime) const
 
 	for (const Sector* sector: m_SectorPtrs)
 	{
-		sector->Draw(m_DebugSettings.showSectorBorders, m_DebugSettings.showSectorCells, m_DebugSettings.showPortals);
+		sector->Draw(m_DebugSettings.showSectorBorders, m_DebugSettings.showSectorCells, m_DebugSettings.showPortals, m_DebugSettings.showHeatMap);
 	}
 
 	if (m_DebugSettings.showSectorsToCalc)
@@ -89,9 +94,9 @@ void App_CrowdPathfinding::Render(float deltaTime) const
 				}
 			}
 			if (isInCalc)
-				sector->Draw(true, false, false);
+				sector->Draw(true, false, false, m_DebugSettings.showHeatMap);
 			else
-				sector->Draw(false, false, false);
+				sector->Draw(false, false, false, false);
 		}
 	}
 
@@ -148,6 +153,7 @@ void App_CrowdPathfinding::UpdateImGui()
 		ImGui::Checkbox("showSectorCells", &m_DebugSettings.showSectorCells);
 		ImGui::Checkbox("showPortals", &m_DebugSettings.showPortals);
 		ImGui::Checkbox("showSectorsToCalc", &m_DebugSettings.showSectorsToCalc);
+		ImGui::Checkbox("showHeatMap", &m_DebugSettings.showHeatMap);
 		ImGui::Spacing();
 
 		//End
@@ -207,7 +213,7 @@ void App_CrowdPathfinding::HandleInput()
 
 }
 
-std::vector<uint8>* App_CrowdPathfinding::ParseMapDataForSectors(int idx)
+std::vector<uint8> App_CrowdPathfinding::ParseMapDataForSectors(int idx)
 {
 	//setup variables
 	const std::string filename = "resources/map.png";
@@ -227,9 +233,9 @@ std::vector<uint8>* App_CrowdPathfinding::ParseMapDataForSectors(int idx)
 
 	constexpr size_t RGBA = 4;
 
-	std::vector<uint8>* pVector = new std::vector<uint8>{};
+	std::vector<uint8> vector{};
 
-	pVector->reserve(s_Size * s_Size);
+	vector.reserve(s_Size * s_Size);
 
 	const int yStartPos{ (idx / 10) * 10 };
 	for (int y{ yStartPos }; y < yStartPos + 10; ++y)
@@ -240,24 +246,24 @@ std::vector<uint8>* App_CrowdPathfinding::ParseMapDataForSectors(int idx)
 			const size_t index = RGBA * ((height - 1 - y) * width + x);
 			if ((image[index + 0] == 0 && image[index + 1] == 0) && image[index + 2] == 0) // if its black
 			{
-				pVector->emplace_back(255);
+				vector.emplace_back(255);
 			}
 			else if ((image[index + 0] >= 1 && image[index + 1] >= 1) && image[index + 2] >= 1) // else if its white
 			{
-				pVector->emplace_back(1);
+				vector.emplace_back(1);
 			}
 			else if ((image[index + 0] == 0 && image[index + 1] == 0) && image[index + 2] >= 1) // else if its blue
 			{
-				pVector->emplace_back(254);
+				vector.emplace_back(254);
 			}
 			else if ((image[index + 0] >= 1 && image[index + 1] == 0) && image[index + 2] == 0) // else if its red
 			{
-				pVector->emplace_back(2);
+				vector.emplace_back(2);
 			}
 			else std::cout << "Failed image parse, inpure color index is: " << index << '\n';
 		}
 	}
-	return pVector;
+	return vector;
 }
 
 void App_CrowdPathfinding::MakePortals()
@@ -293,6 +299,7 @@ void App_CrowdPathfinding::DoPathCalculations()
 
 		DoAstarAndAddToVec(m_SectorPtrs[agentSectorIdx]);
 	}
+	GenerateFlowFields();
 }
 
 void App_CrowdPathfinding::DoAstarAndAddToVec(Sector* pStartNode)

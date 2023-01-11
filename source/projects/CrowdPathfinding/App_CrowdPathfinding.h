@@ -37,6 +37,7 @@ private:
 		bool showSectorCells = false;
 		bool showPortals = false;
 		bool showSectorsToCalc = false;
+		bool showHeatMap = false;
 	};
 	DebugSettings m_DebugSettings{};
 
@@ -53,7 +54,7 @@ private:
 
 	void HandleInput();
 	void UpdateImGui();
-	std::vector<uint8>* ParseMapDataForSectors(int idx);
+	std::vector<uint8> ParseMapDataForSectors(int idx);
 	void MakeLevel();
 	void MakePortals();
 
