@@ -46,7 +46,7 @@ void App_CrowdPathfinding::Start()
 
 	for (Sector* pSector : m_SectorPtrs)
 	{
-		pSector->SetFlowFieldPoint(m_Destination, 0);
+		pSector->SetHeatFieldPoint(m_Destination, 0);
 	}
 
 	m_pAgentManager = new AgentManager();
@@ -172,7 +172,7 @@ void App_CrowdPathfinding::MakeLevel()
 	{
 		for (int x{}; x < s_Size; ++x)
 		{
-			m_SectorPtrs.emplace_back(new Sector(Vector2{ float(5 + x * s_Size), float(5 + y * s_Size) }, ParseMapDataForSectors(x + y*s_Size)));
+			m_SectorPtrs.emplace_back(new Sector(Vector2{ float(5 + x * s_Size), float(5 + y * s_Size) }, ParseMapDataForSectors(x + y*s_Size), &m_SectorPtrs));
 		}
 	}
 
@@ -396,8 +396,8 @@ void App_CrowdPathfinding::DoAstarAndAddToVec(Sector* pStartNode)
 	path.push_back(pStartNode);
 
 
-	std::reverse(path.begin(), path.end());
-
+	//std::reverse(path.begin(), path.end());
+	
 	//return path;
 	for (Sector* pathSector : path)
 	{

@@ -5,9 +5,10 @@
 using namespace Elite;
 
 
-Sector::Sector(const Elite::Vector2& center, const std::vector<uint8>& costField)
+Sector::Sector(const Elite::Vector2& center, const std::vector<uint8>& costField, std::vector<Sector*>* sectors)
 	:m_Center{ center }
 	, m_CostField{ costField }
+	, m_pSectors{ sectors }
 {
 
 	//Create Rigidbodies
@@ -90,11 +91,11 @@ void Sector::Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHea
 	{
 		if (m_HasFlowFieldGenerated)
 		{
-			float highestCost{ -1 };
+			float highestHeat{ -2 };
 			for (float cell : m_HeatField)
 			{
-				if (cell > highestCost)
-					highestCost = cell;
+				if (cell > highestHeat)
+					highestHeat = cell;
 			}
 
 
@@ -103,8 +104,10 @@ void Sector::Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHea
 				const Vector2 center{ m_Center + Vector2{	-4.5f + float(-halfCells + idx % s_Cells) + s_Cells / 2.f,
 															-4.5f + float(-halfCells + idx / s_Cells) + s_Cells / 2.f} };
 
-
-				DEBUGRENDERER2D->DrawPoint(center, 4, Color{ 1 - m_HeatField[idx] / highestCost, 0, 0 });
+				if (m_HeatField[idx] != -1)
+					DEBUGRENDERER2D->DrawPoint(center, 4, Color{ 1 - m_HeatField[idx] / highestHeat, 0, 0 });
+				else
+					DEBUGRENDERER2D->DrawPoint(center, 4, Color{ 0, 0.5f, 1 });
 			}
 		}
 	}
@@ -207,7 +210,7 @@ const std::vector<Portal*>* Sector::GetPortals() const
 	return &m_PortalsPtrs;
 }
 
-void Sector::SetFlowFieldPoint(const Elite::Vector2& point, int value)
+void Sector::SetHeatFieldPoint(const Elite::Vector2& point, int value)
 {
 	if (point.x < m_Center.x - 5 || point.x > m_Center.x + 5)
 		return;
@@ -219,16 +222,34 @@ void Sector::SetFlowFieldPoint(const Elite::Vector2& point, int value)
 	m_HeatField[idx] = value;
 }
 
+void Sector::SetHeatFieldPoint(int idx, int value)
+{
+	m_HeatField[idx] = value;
+}
+
+int Sector::GetHeatFieldValue(int idx) const
+{
+	return m_HeatField[idx];
+}
+
 void Sector::GenerateFlowField()
 {
 	// dont need to calculate if it has the data already
 	if (m_HasFlowFieldGenerated)
 		return;
 
-	GenerateIntegrationField();
+	GenerateHeatField();
 
 	//calculations
+	for (int i{}; i < 100; ++i)
+	{
+		GenerateVectorBasedOnHeatField(i);
+	}
+}
 
+bool Sector::HasGeneratedFlowField() const
+{
+	return m_HasFlowFieldGenerated;
 }
 
 void Sector::Make1Portal(int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos)
@@ -248,7 +269,7 @@ void Sector::TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx
 	IsMakingPortal = false;
 }
 
-void Sector::GenerateIntegrationField()
+void Sector::GenerateHeatField()
 {
 	std::vector<int> toDoList{};
 	std::vector<int> finishedList{};
@@ -300,6 +321,12 @@ void Sector::GenerateIntegrationField()
 						break;
 					}
 				}
+				//Check if its not a wall
+				if (m_CostField[connectedNode] > 200)
+				{
+					IsAddedAlready = true;
+				}
+
 				//if it is in neither, add it to newToDoList
 				if (IsAddedAlready == false)
 				{
@@ -315,11 +342,9 @@ void Sector::GenerateIntegrationField()
 		toDoList = newToDoList; 
 	}
 	m_HasFlowFieldGenerated = true;
-
+	FlowFieldFlowOverToNeighborSector();
 	
 }
-
-
 
 std::vector<int> Sector::GetCellNeighbors(int idx)
 {
@@ -335,4 +360,84 @@ std::vector<int> Sector::GetCellNeighbors(int idx)
 		returnVector.push_back(idx - 1);
 
 	return returnVector;
+}
+
+void Sector::FlowFieldFlowOverToNeighborSector()
+{
+	std::vector<Sector*> neighborSectors{};
+	neighborSectors.resize(4);
+
+	int myIdx{ int(m_Center.x) / 10 + 10 * (int(m_Center.y) / 10) };
+
+	if (myIdx < 90)
+		neighborSectors[0] = (*m_pSectors)[myIdx + 10];
+	if (myIdx > 9)
+		neighborSectors[1] = (*m_pSectors)[myIdx - 10];
+	if (myIdx % 10 != 9)
+		neighborSectors[2] = (*m_pSectors)[myIdx + 1];
+	if (myIdx % 10 != 0)
+		neighborSectors[3] = (*m_pSectors)[myIdx - 1];
+
+
+	if (neighborSectors[0])
+	{
+		if (neighborSectors[0]->HasGeneratedFlowField() == false)
+		{
+			for (int i{}; i < 10; ++i)
+			{
+				if (neighborSectors[0]->GetHeatFieldValue(i) == -1 && neighborSectors[0]->IsWall(i) == false
+					&& m_HeatField[90 + i] != -1 && m_CostField[90 + i] < 200)
+				{
+					neighborSectors[0]->SetHeatFieldPoint(i, m_HeatField[90 + i] + 1);
+				}
+			}
+		}
+	}
+	if (neighborSectors[1])
+	{
+		if (neighborSectors[1]->HasGeneratedFlowField() == false)
+		{
+			for (int i{}; i < 10; ++i)
+			{
+				if (neighborSectors[1]->GetHeatFieldValue(90 + i) == -1 && neighborSectors[1]->IsWall(90 + i) == false
+					&& m_HeatField[i] != -1 && m_CostField[i] < 200)
+				{
+					neighborSectors[1]->SetHeatFieldPoint(90 + i, m_HeatField[i] + 1);
+				}
+			}
+		}
+	}
+	if (neighborSectors[2])
+	{
+		if (neighborSectors[2]->HasGeneratedFlowField() == false)
+		{
+			for (int i{}; i < 10; ++i)
+			{
+				if (neighborSectors[2]->GetHeatFieldValue(i * 10) == -1 && neighborSectors[2]->IsWall(i * 10) == false
+					&& m_HeatField[9 + i * 10] != -1 && m_CostField[9 + i * 10] < 200)
+				{
+					neighborSectors[2]->SetHeatFieldPoint(i * 10, m_HeatField[9 + i * 10] + 1);
+				}
+			}
+		}
+	}
+	if (neighborSectors[3])
+	{
+		if (neighborSectors[3]->HasGeneratedFlowField() == false)
+		{
+			for (int i{}; i < 10; ++i)
+			{
+				if (neighborSectors[3]->GetHeatFieldValue(9 + i * 10) == -1 && neighborSectors[3]->IsWall(9 + i * 10) == false
+					&& m_HeatField[i * 10] != -1 && m_CostField[i * 10] < 200)
+				{
+					neighborSectors[3]->SetHeatFieldPoint(9 + i * 10, m_HeatField[i * 10] + 1);
+				}
+			}
+		}
+	}
+}
+
+void Sector::GenerateVectorBasedOnHeatField(int idx)
+{
+
 }

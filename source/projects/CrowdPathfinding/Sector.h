@@ -8,7 +8,8 @@ class Sector final
 {
 public:
 	explicit Sector(const Elite::Vector2& center,
-					const std::vector<uint8>& costField);
+					const std::vector<uint8>& costField,
+					std::vector<Sector*>* sectors);
 
 	~Sector();
 
@@ -25,9 +26,13 @@ public:
 	Elite::Vector2 GetCenter() const;
 	const std::vector<Portal*>* GetPortals() const;
 
-	void SetFlowFieldPoint(const Elite::Vector2& point, int value);
+	void SetHeatFieldPoint(const Elite::Vector2& point, int value);
+	void SetHeatFieldPoint(int idx, int value);
+	int GetHeatFieldValue(int idx) const;
 
 	void GenerateFlowField();
+
+	bool HasGeneratedFlowField() const;
 
 	void Make1Portal(int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos);
 private:
@@ -36,11 +41,8 @@ private:
 
 	Elite::Vector2 m_Center{};
 
-	//1 Byte per item, 255 = wall
 	std::vector<uint8> m_CostField{};
-	//5 Bytes per item, float = total integrated cost, bool = Active waveFront
 	std::vector<float> m_HeatField{};
-	//1 Byte per item, uint8_t = key for direction lookupTable
 	std::vector<uint8> m_FlowField{};
 
 	bool m_HasFlowFieldGenerated{false};
@@ -49,10 +51,15 @@ private:
 
 	std::vector<RigidBody*> m_RBptrs{};
 
+	std::vector<Sector*>* m_pSectors{};
 
 	void TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos, const std::vector<Sector*>& sectorPtrs);
-	void GenerateIntegrationField();
+	void GenerateHeatField();
 	std::vector<int> GetCellNeighbors(int idx);
-};
+	void FlowFieldFlowOverToNeighborSector();
+	void GenerateVectorBasedOnHeatField(int idx);
+
+
+}; 
 
 #endif
