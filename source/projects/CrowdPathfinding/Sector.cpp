@@ -104,7 +104,7 @@ void Sector::Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHea
 															-4.5f + float(-halfCells + idx / s_Cells) + s_Cells / 2.f} };
 
 
-				DEBUGRENDERER2D->DrawPoint(center, 4, Color{ m_HeatField[idx] / highestCost, 0, 0 });
+				DEBUGRENDERER2D->DrawPoint(center, 4, Color{ 1 - m_HeatField[idx] / highestCost, 0, 0 });
 			}
 		}
 	}
@@ -259,8 +259,6 @@ void Sector::GenerateIntegrationField()
 			toDoList.push_back(idx);
 	}
 
-	int distanceCounter{ 0 };
-
 	//For as long as there are nodes that have not been calculated
 	while (toDoList.empty() == false)
 	{
@@ -269,8 +267,6 @@ void Sector::GenerateIntegrationField()
 		//for every node in to do list
 		for (int node : toDoList)
 		{
-			//Set distance
-			m_HeatField[node] = distanceCounter;
 
 			//Check their connections to set up future caluclation
 			for (const int connectedNode : GetCellNeighbors(node))
@@ -307,14 +303,16 @@ void Sector::GenerateIntegrationField()
 				//if it is in neither, add it to newToDoList
 				if (IsAddedAlready == false)
 				{
+					//Set distance
+					m_HeatField[connectedNode] = m_HeatField[node] + 1;
+
 					newToDoList.push_back(connectedNode);
 				}
 			}
 			finishedList.push_back(node);
 		}
 
-		toDoList = newToDoList;
-		++distanceCounter;
+		toDoList = newToDoList; 
 	}
 	m_HasFlowFieldGenerated = true;
 
