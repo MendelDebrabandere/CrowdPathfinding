@@ -144,7 +144,7 @@ void App_ResearchTopic::UpdateImGui()
 	//UI
 	{
 		//Setup
-		int menuWidth = 200;
+		int menuWidth = 250;
 		int const width = DEBUGRENDERER2D->GetActiveCamera()->GetWidth();
 		int const height = DEBUGRENDERER2D->GetActiveCamera()->GetHeight();
 		bool windowActive = true;
@@ -156,7 +156,11 @@ void App_ResearchTopic::UpdateImGui()
 		//Elements
 		ImGui::Text("CONTROLS");
 		ImGui::Indent();
-		ImGui::Text("MMB: target");
+		ImGui::Text("MMB: Change goal");
+		ImGui::Text("left mouse: Pan camera");
+		ImGui::Text("Up arrow: Place 1 agent ");
+		ImGui::Text("Right arrow: Place 30 agents");
+		ImGui::Text("Down arrow: Clear all agents");
 		ImGui::Unindent();
 
 		/*Spacing*/ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing(); ImGui::Spacing();
@@ -270,7 +274,7 @@ void App_ResearchTopic::ParseMapData()
 		const int y = i / COLUMNS;
 		const int x = i % COLUMNS;
 		const size_t index = RGBA * ((height - 1 - y) * width + x);
-		if (image[index + 0] == 0) // + 0 means R channel of pixel, + 1 means blue...
+		if (image[index + 0] == 0 && image[index + 1] == 0 && image[index + 2] == 0) // + 0 means R channel of pixel, + 1 means green...
 		{
 			m_pGridGraph->GetNode(i)->SetTerrainType(TerrainType::Water);
 			m_pGridGraph->RemoveConnectionsToAdjacentNodes(i);

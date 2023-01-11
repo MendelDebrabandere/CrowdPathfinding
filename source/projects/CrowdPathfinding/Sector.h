@@ -20,7 +20,7 @@ public:
 	Sector& operator=(Sector&& other) = delete;
 
 
-	void Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHeatMap) const;
+	void Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHeatMap, bool showVectors) const;
 	void MakePortals(const std::vector<Sector*>& sectorPtrs);
 	bool IsWall(int idx) const;
 	Elite::Vector2 GetCenter() const;
@@ -31,10 +31,15 @@ public:
 	int GetHeatFieldValue(int idx) const;
 
 	void GenerateFlowField();
-
 	bool HasGeneratedFlowField() const;
 
+	Elite::Vector2 GetFlowVector(const Elite::Vector2& position) const;
+
 	void Make1Portal(int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos);
+
+
+	void ClearData();
+
 private:
 	static constexpr uint8 s_Cells{10};
 	static constexpr uint8 s_CellSize{1};
@@ -42,8 +47,8 @@ private:
 	Elite::Vector2 m_Center{};
 
 	std::vector<uint8> m_CostField{};
-	std::vector<float> m_HeatField{};
-	std::vector<uint8> m_FlowField{};
+	std::vector<int> m_HeatField{};
+	std::vector<Elite::Vector2> m_FlowField{};
 
 	bool m_HasFlowFieldGenerated{false};
 
@@ -59,7 +64,7 @@ private:
 	void FlowFieldFlowOverToNeighborSector();
 	void GenerateVectorBasedOnHeatField(int idx);
 
-
+	Elite::Vector2 GetCellPos(int idx) const;
 }; 
 
 #endif

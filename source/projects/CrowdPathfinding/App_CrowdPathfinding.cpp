@@ -65,6 +65,8 @@ void App_CrowdPathfinding::Update(float deltaTime)
 
 	//UPDATE AGENTS
 	DoPathCalculations();
+
+	m_pAgentManager->UpdateAgents(deltaTime, &m_SectorPtrs);
 }
 
 void App_CrowdPathfinding::Render(float deltaTime) const
@@ -77,7 +79,7 @@ void App_CrowdPathfinding::Render(float deltaTime) const
 
 	for (const Sector* sector: m_SectorPtrs)
 	{
-		sector->Draw(m_DebugSettings.showSectorBorders, m_DebugSettings.showSectorCells, m_DebugSettings.showPortals, m_DebugSettings.showHeatMap);
+		sector->Draw(m_DebugSettings.showSectorBorders, m_DebugSettings.showSectorCells, m_DebugSettings.showPortals, m_DebugSettings.showHeatMap, m_DebugSettings.showVectors);
 	}
 
 	if (m_DebugSettings.showSectorsToCalc)
@@ -94,11 +96,15 @@ void App_CrowdPathfinding::Render(float deltaTime) const
 				}
 			}
 			if (isInCalc)
-				sector->Draw(true, false, false, m_DebugSettings.showHeatMap);
+				sector->Draw(true, false, false, m_DebugSettings.showHeatMap, m_DebugSettings.showVectors);
 			else
-				sector->Draw(false, false, false, false);
+				sector->Draw(false, false, false, false, false);
 		}
 	}
+
+	//Render middle of screen crosshair
+	const Vector2 centerScreen = { DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901 / 2.f, 451 / 2.f }) };
+	DEBUGRENDERER2D->DrawPoint(centerScreen, 4, Color{ 1,1,1 });
 
 	m_pAgentManager->RenderAgents(deltaTime);
 }
@@ -110,7 +116,7 @@ void App_CrowdPathfinding::UpdateImGui()
 	//UI
 	{
 		//Setup
-		int menuWidth = 200;
+		int menuWidth = 250;
 		int const width = DEBUGRENDERER2D->GetActiveCamera()->GetWidth();
 		int const height = DEBUGRENDERER2D->GetActiveCamera()->GetHeight();
 		bool windowActive = true;
@@ -122,7 +128,11 @@ void App_CrowdPathfinding::UpdateImGui()
 		//Elements
 		ImGui::Text("CONTROLS");
 		ImGui::Indent();
-		ImGui::Text("MMB: target");
+		ImGui::Text("MMB: Change goal");
+		ImGui::Text("left mouse: Pan camera");
+		ImGui::Text("Up arrow: Place 1 agent ");
+		ImGui::Text("Right arrow: Place 30 agents");
+		ImGui::Text("Down arrow: Clear all agents");
 		ImGui::Unindent();
 
 		/*Spacing*/ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing(); ImGui::Spacing();
@@ -141,7 +151,7 @@ void App_CrowdPathfinding::UpdateImGui()
 		ImGui::Text("Stats");
 		ImGui::Indent();
 		ImGui::Text("Amount of Cells: %.1f ", 10000.f);
-		//ImGui::Text("Amount of Agents: %.1f ", float(m_pAgents->GetAmountOfAgents()));
+		ImGui::Text("Amount of Agents: %.1f ", float(m_pAgentManager->GetAmountOfAgents()));
 		ImGui::Unindent();
 		ImGui::Spacing();
 
@@ -154,6 +164,7 @@ void App_CrowdPathfinding::UpdateImGui()
 		ImGui::Checkbox("showPortals", &m_DebugSettings.showPortals);
 		ImGui::Checkbox("showSectorsToCalc", &m_DebugSettings.showSectorsToCalc);
 		ImGui::Checkbox("showHeatMap", &m_DebugSettings.showHeatMap);
+		ImGui::Checkbox("showVectors", &m_DebugSettings.showVectors);
 		ImGui::Spacing();
 
 		//End
@@ -190,26 +201,22 @@ void App_CrowdPathfinding::HandleInput()
 	const MouseData mouseData = { INPUTMANAGER->GetMouseData(Elite::InputType::eMouseButton, Elite::InputMouseButton::eMiddle) };
 	const Vector2 mousePos = { DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld({ (float)mouseData.X, (float)mouseData.Y }) };
 
-	//if (middleMousePressed)
-	//{
-	//	//Find closest node to click pos
-	//	const int closestNode = m_pGridGraph->GetNodeIdxAtWorldPos(mousePos);
-	//	destinationIdx = closestNode;
-	//	m_pHeatMap->CalculateHeatMap(destinationIdx);
-	//	m_pVectorMap->ResetVectorMap();
-	//}
-	//if (upPressed)
-	//{
-	//	m_pAgents->AddAgent(/*mousePos*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
-	//}
-	//if (rightPressed)
-	//{
-	//	m_pAgents->Add30Agents(/*mousePos*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901 / 2.f, 451 / 2.f }));
-	//}
-	//if (downPressed)
-	//{
-	//	m_pAgents->ClearAllAgents();
-	//}
+	if (middleMousePressed)
+	{
+		MoveDestination(mousePos);
+	}
+	if (upPressed)
+	{
+		m_pAgentManager->AddAgent(/*mousePos*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901/2.f, 451/2.f }));
+	}
+	if (rightPressed)
+	{
+		m_pAgentManager->Add30Agents(/*mousePos*/ DEBUGRENDERER2D->GetActiveCamera()->ConvertScreenToWorld(Vector2{ 901 / 2.f, 451 / 2.f }));
+	}
+	if (downPressed)
+	{
+		m_pAgentManager->ClearAllAgents();
+	}
 
 }
 
@@ -430,5 +437,19 @@ void App_CrowdPathfinding::GenerateFlowFields()
 	for (Sector* sector : m_SectorsToCalc)
 	{
 		sector->GenerateFlowField();
+	}
+}
+
+void App_CrowdPathfinding::MoveDestination(const Elite::Vector2& newDest)
+{
+	m_Destination = newDest;
+
+	for (Sector* pSector : m_SectorPtrs)
+	{
+		pSector->SetHeatFieldPoint(m_Destination, 0);
+
+		m_SectorsToCalc.clear();
+		pSector->ClearData();
+		pSector->SetHeatFieldPoint(m_Destination, 0);
 	}
 }

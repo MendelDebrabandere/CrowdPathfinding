@@ -38,6 +38,7 @@ private:
 		bool showPortals = false;
 		bool showSectorsToCalc = false;
 		bool showHeatMap = false;
+		bool showVectors = false;
 	};
 	DebugSettings m_DebugSettings{};
 
@@ -63,6 +64,8 @@ private:
 	float GetHeuristicCost(const Sector* pStartNode) const;
 
 	void GenerateFlowFields();
+
+	void MoveDestination(const Elite::Vector2& newDest);
 
 };
 

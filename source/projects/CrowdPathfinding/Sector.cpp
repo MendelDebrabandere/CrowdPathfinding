@@ -50,7 +50,7 @@ Sector::~Sector()
 
 }
 
-void Sector::Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHeatMap) const
+void Sector::Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHeatMap, bool showVectors) const
 {
 	constexpr float halfCells{ s_Cells / 2.f };
 	if (drawEdges)
@@ -105,9 +105,20 @@ void Sector::Draw(bool drawEdges, bool drawCells, bool showPortals, bool showHea
 															-4.5f + float(-halfCells + idx / s_Cells) + s_Cells / 2.f} };
 
 				if (m_HeatField[idx] != -1)
-					DEBUGRENDERER2D->DrawPoint(center, 4, Color{ 1 - m_HeatField[idx] / highestHeat, 0, 0 });
+					DEBUGRENDERER2D->DrawPoint(center, 7, Color{ 1 - m_HeatField[idx] / highestHeat, 0, 0 });
 				else
-					DEBUGRENDERER2D->DrawPoint(center, 4, Color{ 0, 0.5f, 1 });
+					DEBUGRENDERER2D->DrawPoint(center, 7, Color{ 0, 0.5f, 1 });
+			}
+		}
+	}
+	if (showVectors)
+	{
+		for (int idx{}; idx < m_FlowField.size(); ++idx)
+		{
+			if (m_CostField[idx] > 0)
+			{
+				Vector2 position{ GetCellPos(idx) };
+				DEBUGRENDERER2D->DrawSegment(position, position + (m_FlowField[idx] * 0.6f), Color{ 1.f,1.f,1.f }, 0.9f);
 			}
 		}
 	}
@@ -210,14 +221,16 @@ const std::vector<Portal*>* Sector::GetPortals() const
 	return &m_PortalsPtrs;
 }
 
-void Sector::SetHeatFieldPoint(const Elite::Vector2& point, int value)
+void Sector::SetHeatFieldPoint(const Vector2& point, int value)
 {
 	if (point.x < m_Center.x - 5 || point.x > m_Center.x + 5)
 		return;
 	if (point.y < m_Center.y - 5 || point.y > m_Center.y + 5)
 		return;
 
-	const int idx{ (int(m_Center.x) / 10) + (10 * (int(m_Center.y) / 10)) };
+	const Vector2 localPoint{ point.x - m_Center.x + 5, point.y - m_Center.y + 5 };
+
+	const int idx{ int(localPoint.x) + (10 * int(localPoint.y)) };
 
 	m_HeatField[idx] = value;
 }
@@ -243,7 +256,10 @@ void Sector::GenerateFlowField()
 	//calculations
 	for (int i{}; i < 100; ++i)
 	{
-		GenerateVectorBasedOnHeatField(i);
+		if (m_CostField[i] < 200)
+		{
+			GenerateVectorBasedOnHeatField(i);
+		}
 	}
 }
 
@@ -252,9 +268,37 @@ bool Sector::HasGeneratedFlowField() const
 	return m_HasFlowFieldGenerated;
 }
 
+Vector2 Sector::GetFlowVector(const Elite::Vector2& position) const
+{
+	if (position.x < m_Center.x + 5 && position.x > m_Center.x - 5)
+	{
+		if (position.y < m_Center.y + 5 && position.y > m_Center.y - 5)
+		{
+			const Vector2 localPoint{ position.x - m_Center.x + 5, position.y - m_Center.y + 5 };
+
+			const int idx{ int(localPoint.x) + (10 * int(localPoint.y)) };
+
+			return m_FlowField[idx];
+		}
+	}
+	return Vector2{};
+}
+
 void Sector::Make1Portal(int myIdx, int otherSectorIdx, const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos)
 {
 	m_PortalsPtrs.push_back(new Portal(startPortalPos, endPortalPos, myIdx, otherSectorIdx));
+}
+
+void Sector::ClearData()
+{
+	int size(m_CostField.size());
+	m_HeatField.clear();
+	m_HeatField.resize(size);
+	std::fill(m_HeatField.begin(), m_HeatField.end(), -1);
+	m_FlowField.clear();
+	m_FlowField.resize(size);
+
+	m_HasFlowFieldGenerated = false;
 }
 
 void Sector::TryToMakePortal(bool& IsMakingPortal, int myIdx, int otherSectorIdx,const Elite::Vector2& startPortalPos, const Elite::Vector2& endPortalPos, const std::vector<Sector*>& sectorPtrs)
@@ -439,5 +483,172 @@ void Sector::FlowFieldFlowOverToNeighborSector()
 
 void Sector::GenerateVectorBasedOnHeatField(int idx)
 {
+	if (m_CostField[idx] > 200)
+		return;
 
+	bool isOnEdge{ false };
+	if (idx >= 90 || idx <= 9 || idx % 10 == 9 || idx % 10 == 0)
+		isOnEdge = true;
+
+
+	std::vector<int> surroundingValues{};
+	if (isOnEdge)
+	{
+		int myIdx{ int(m_Center.x) / 10 + 10 * (int(m_Center.y) / 10) };
+
+		//HANDLE CORNER CASES
+		if (idx == 90)
+		{
+			surroundingValues.push_back((*m_pSectors)[myIdx + 9]->GetHeatFieldValue(idx - 81)); //
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 90));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 89));
+			surroundingValues.push_back(m_HeatField[idx + 1]);
+			surroundingValues.push_back(m_HeatField[idx - 9]);
+			surroundingValues.push_back(m_HeatField[idx - 10]);
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx - 1));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx + 9));
+		}
+		else if (idx == 99)
+		{
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 91));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 90));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 11]->GetHeatFieldValue(idx - 99)); //
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx - 9));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx - 19));
+			surroundingValues.push_back(m_HeatField[idx - 10]);
+			surroundingValues.push_back(m_HeatField[idx - 11]);
+			surroundingValues.push_back(m_HeatField[idx - 1]);
+		}
+		else if (idx == 0)
+		{
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx + 19));
+			surroundingValues.push_back(m_HeatField[idx + 10]);
+			surroundingValues.push_back(m_HeatField[idx + 11]);
+			surroundingValues.push_back(m_HeatField[idx + 1]);
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 91));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 90));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 11]->GetHeatFieldValue(idx + 99)); //
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx + 9));
+		}
+		else if (idx == 9)
+		{
+			surroundingValues.push_back(m_HeatField[idx + 9]);
+			surroundingValues.push_back(m_HeatField[idx + 10]);
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx + 1));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx - 9));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 9]->GetHeatFieldValue(idx + 81)); //
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 90));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 89));
+			surroundingValues.push_back(m_HeatField[idx - 1]);
+		}
+
+
+		// HANDLE EDGE CASES
+		else if (idx >= 90)
+		{
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 91));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 90));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 10]->GetHeatFieldValue(idx - 89));
+			surroundingValues.push_back(m_HeatField[idx + 1]);
+			surroundingValues.push_back(m_HeatField[idx - 9]);
+			surroundingValues.push_back(m_HeatField[idx - 10]);
+			surroundingValues.push_back(m_HeatField[idx - 11]);
+			surroundingValues.push_back(m_HeatField[idx - 1]);
+		}
+		else if (idx <= 9)
+		{
+			surroundingValues.push_back(m_HeatField[idx + 9]);
+			surroundingValues.push_back(m_HeatField[idx + 10]);
+			surroundingValues.push_back(m_HeatField[idx + 11]);
+			surroundingValues.push_back(m_HeatField[idx + 1]);
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 91));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 90));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 10]->GetHeatFieldValue(idx + 89));
+			surroundingValues.push_back(m_HeatField[idx - 1]);
+		}
+		else if (idx % 10 == 9)
+		{
+			surroundingValues.push_back(m_HeatField[idx + 9]);
+			surroundingValues.push_back(m_HeatField[idx + 10]);
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx + 1));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx - 9));
+			surroundingValues.push_back((*m_pSectors)[myIdx + 1]->GetHeatFieldValue(idx - 19));
+			surroundingValues.push_back(m_HeatField[idx - 10]);
+			surroundingValues.push_back(m_HeatField[idx - 11]);
+			surroundingValues.push_back(m_HeatField[idx - 1]);
+		}
+		else if (idx % 10 == 0)
+		{
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx + 19));
+			surroundingValues.push_back(m_HeatField[idx + 10]);
+			surroundingValues.push_back(m_HeatField[idx + 11]);
+			surroundingValues.push_back(m_HeatField[idx + 1]);
+			surroundingValues.push_back(m_HeatField[idx - 9]);
+			surroundingValues.push_back(m_HeatField[idx - 10]);
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx - 1));
+			surroundingValues.push_back((*m_pSectors)[myIdx - 1]->GetHeatFieldValue(idx + 9));
+		}
+	}
+	else
+	{
+		// BASE NORMAL CASE
+		surroundingValues.push_back(m_HeatField[idx + 9]);
+		surroundingValues.push_back(m_HeatField[idx + 10]);
+		surroundingValues.push_back(m_HeatField[idx + 11]);
+		surroundingValues.push_back(m_HeatField[idx + 1]);
+		surroundingValues.push_back(m_HeatField[idx - 9]);
+		surroundingValues.push_back(m_HeatField[idx - 10]);
+		surroundingValues.push_back(m_HeatField[idx - 11]);
+		surroundingValues.push_back(m_HeatField[idx - 1]);
+	}
+
+
+	int nearestVal{INT_MAX};
+	int nearestIdx{-1};
+	for (int idx{}; idx < surroundingValues.size(); ++idx)
+	{
+		if (surroundingValues[idx] < nearestVal && surroundingValues[idx] != -1)
+		{
+			nearestVal = surroundingValues[idx];
+			nearestIdx = idx;
+		}
+	}
+
+	Vector2 vector{};
+	switch (nearestIdx)
+	{
+	case 0:
+		vector = Vector2(-1, 1);
+		break;
+	case 1:
+		vector = Vector2(0, 1);
+		break;
+	case 2:
+		vector = Vector2(1, 1);
+		break;
+	case 3:
+		vector = Vector2(1, 0);
+		break;
+	case 4:
+		vector = Vector2(1, -1);
+		break;
+	case 5:
+		vector = Vector2(0, -1);
+		break;
+	case 6:
+		vector = Vector2(-1, -1);
+		break;
+	case 7:
+		vector = Vector2(-1, 0);
+		break;
+	}
+
+
+	m_FlowField[idx] = vector;
+
+}
+
+Vector2 Sector::GetCellPos(int idx) const
+{
+	return m_Center + Vector2{ -4.5f + idx % 10, -4.5f + idx / 10 };
 }

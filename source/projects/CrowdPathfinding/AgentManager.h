@@ -1,5 +1,6 @@
 #pragma once
 
+class Sector;
 class SteeringAgent;
 
 class AgentManager final
@@ -19,10 +20,10 @@ public:
 	void RenderAgents(float dTime) const;
 	const std::vector<SteeringAgent*>* GetAgents() const;
 
-	//void UpdateAgentsAndCreateVectors(float dTime, int destinationIdx, int sizeCell, VectorMapManager* pVectorManager, const HeatmapManager* pHeatmapManager);
-	//void AddAgent(const Vector2& position);
-	//void Add30Agents(const Vector2& position);
-	//void ClearAllAgents();
+	void UpdateAgents(float dTime, const std::vector<Sector*>* pSectors);
+	void AddAgent(const Elite::Vector2& position);
+	void Add30Agents(const Elite::Vector2& position);
+	void ClearAllAgents();
 
 private:
 	std::vector<SteeringAgent*> m_Agents{};

@@ -41,7 +41,7 @@ void AgentManager::UpdateAgentsAndCreateVectors(float dTime, int destinationIdx,
 			if (destinationIdx == idx)
 				a->SetLinearVelocity(m_pGridGraph->GetNodeWorldPos(destinationIdx) - a->GetPosition());
 			else
-				a->SetLinearVelocity((*pVectorManager->GetVectorMap())[idx] * 100);
+				a->SetLinearVelocity((*pVectorManager->GetVectorMap())[idx] * 500);
 
 		
 		const int nodeIdx{ m_pGridGraph->GetNodeIdxAtWorldPos(a->GetPosition()) };
@@ -58,8 +58,8 @@ void AgentManager::AddAgent(const Vector2& position)
 	SteeringAgent* agent{};
 	agent = new SteeringAgent(4);
 	agent->SetAutoOrient(true);
-	agent->SetMaxLinearSpeed(50);
-	agent->SetMass(10000);
+	agent->SetMaxLinearSpeed(300);
+	agent->SetMass(1);
 	
 	agent->SetPosition(position);
 
