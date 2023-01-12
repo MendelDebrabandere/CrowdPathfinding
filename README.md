@@ -2,16 +2,8 @@
 
 I created a goal based vector field / flow field pathfinding algorithm.
 
-The world used is a map parsed from a png.
+![Examplegif](https://user-images.githubusercontent.com/95921047/211932886-a1f990c7-ca8b-4a30-804f-159e84a5dc46.gif)
 
-![image](https://user-images.githubusercontent.com/95921047/211921875-e399c14a-6148-4feb-af09-59004fdf0c9b.png)
-![image](https://user-images.githubusercontent.com/95921047/211921676-acc0adf3-7e8c-4d30-9672-5ac9b02c46c4.png)
-
-
-The image contains 3 info pieces:
-1. Black = wall
-2. Blue = inaccessible area
-3. White = walkable area
 
 
 ## World Layout
