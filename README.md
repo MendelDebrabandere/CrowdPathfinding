@@ -55,9 +55,3 @@ Example of flow field generation: ![image](https://user-images.githubusercontent
 ## Conclusion
 Now everything is done and all that is left is to set the agent's velocity to that of the vector of the cell that it is in and we have created flow field that can handle loads of agents in large worlds.
 
-
-
-![Examplegif](https://user-images.githubusercontent.com/95921047/211932886-a1f990c7-ca8b-4a30-804f-159e84a5dc46.gif)
-
-
-
