@@ -52,5 +52,8 @@ Example of flow field generation: ![image](https://user-images.githubusercontent
 
 
 ## Conclusion
-Now everything is done and all that is left is to set the agent's velocity to that of the vector of the cell that it is in and we have created flow field that can handle loads of agents in large worlds.
-
+Now everything is done and all that is left is to set the agent's velocity to that of the vector of the cell that it is in and we have created flow field that can handle loads of agents in large worlds.  
+  
+sources:  
+https://www.youtube.com/watch?v=ZJZu3zLMYAc  
+http://www.gameaipro.com/GameAIPro/GameAIPro_Chapter23_Crowd_Pathfinding_and_Steering_Using_Flow_Field_Tiles.pdf
