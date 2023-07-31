@@ -1,5 +1,7 @@
 # GPP-Exam-research-topic
 
+Github repo: https://github.com/MendelDebrabandere/CrowdPathfinding
+
 I created a goal based vector field / flow field pathfinding algorithm.
 
 ![Infinite_Examplegif](https://user-images.githubusercontent.com/95921047/212049584-7a818c75-f573-4051-ad22-eb996eeab01d.gif)
