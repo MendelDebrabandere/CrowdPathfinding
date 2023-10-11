@@ -1,4 +1,4 @@
-# GPP-Exam-research-topic
+# Crowd pathfinding
 
 Github repo: https://github.com/MendelDebrabandere/CrowdPathfinding
 
